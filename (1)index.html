@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>twIIgs — Design Your Poles</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --ink: #1A1A1A;
+    --ink-mid: #555;
+    --ink-light: #999;
+    --white: #FFFFFF;
+    --evergreen: #3D6B4A;
+    --radius-md: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
+    --transition: 0.2s ease;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREEN MANAGEMENT ── */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    border-radius: 4px;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--white);
+    cursor: pointer;
+    transition: all var(--transition);
+    user-select: none;
+  }
+  .btn:hover { background: transparent; color: var(--ink); }
+  .btn.btn-outline { background: transparent; color: var(--ink); }
+  .btn.btn-outline:hover { background: var(--ink); color: var(--white); }
+  .btn.btn-accent { background: var(--evergreen); border-color: var(--evergreen); }
+  .btn.btn-accent:hover { background: transparent; color: var(--evergreen); }
+
+  /* ── TYPOGRAPHY HELPERS ── */
+  .step-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+  .step-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-top: 4px;
+  }
+
+  /* ── NAV BAR ── */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1.5px solid rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .logotype {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .logotype .lw { color: var(--ink); }
+  .logotype .li { color: var(--evergreen); }
+
+  .nav-steps { display: flex; gap: 6px; align-items: center; }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.15);
+    transition: all var(--transition);
+  }
+  .nav-dot.active { background: var(--ink); width: 24px; border-radius: 4px; }
+  .nav-dot.done { background: var(--ink-mid); }
+
+  /* ── POLE VISUALIZATION ── */
+  .poles-wrapper {
+    display: flex;
+    gap: clamp(16px, 4vw, 50px);
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .pole-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pole-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    margin-bottom: 8px;
+  }
+  /* pole-body centers shaft under rings */
+  .pole-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .pole-rings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ring {
+    border-radius: 999px;
+    transition: background-color 0.28s ease;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ring::after {
+    content: '';
+    position: absolute;
+    top: 14%; left: 11%;
+    width: 34%; height: 32%;
+    background: rgba(255,255,255,0.18);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+  .pole-shaft {
+    border-radius: 0 0 4px 4px;
+    background: #252525;
+    flex-shrink: 0;
+  }
+
+  /* ── SCREEN 1: LANDING ── */
+  #screen-landing { background: var(--bg); }
+  .landing-inner {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px 20px;
+  }
+  .landing-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 14px;
+  }
+  .landing-wordmark {
+    font-family: 'Anton', sans-serif;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 0.88;
+    margin-bottom: 4px;
+  }
+  .landing-wordmark .wm-brand {
+    font-size: clamp(4rem, 14vw, 10rem);
+    display: block;
+  }
+  .landing-wordmark .wm-product {
+    font-size: clamp(2rem, 7vw, 5.5rem);
+    display: block;
+    letter-spacing: 0.1em;
+    color: var(--evergreen);
+  }
+  .landing-wordmark .lw { color: var(--ink); }
+  .landing-wordmark .li { color: var(--evergreen); }
+
+  .landing-poles-preview {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 32px 0 36px;
+  }
+  .landing-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 16px 52px;
+    border-radius: 4px;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--white);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .landing-btn:hover { background: transparent; color: var(--ink); }
+  .landing-footer {
+    padding: 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ── SCREEN 2: PALETTE ── */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+  }
+  .palette-card {
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 20px;
+    background: var(--white);
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+  }
+  .palette-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .palette-card.selected { border-color: var(--ink); box-shadow: var(--shadow-lg); }
+  .palette-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .palette-swatches { display: flex; gap: 6px; }
+  .swatch {
+    flex: 1;
+    height: 38px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    transition: transform var(--transition);
+  }
+  .palette-selected-mark {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--evergreen);
+    opacity: 0;
+    margin-top: 10px;
+    transition: opacity var(--transition);
+  }
+  .palette-card.selected .palette-selected-mark { opacity: 1; }
+
+  /* ── SCREEN 3: PATTERN ── */
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+  }
+  .pattern-card {
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 20px 14px;
+    background: var(--white);
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .pattern-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .pattern-card.selected { border-color: var(--ink); }
+  .pattern-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .mini-poles-wrap {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* ── SCREEN 4: COLORS ── */
+  .colors-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 20px;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .colors-layout { grid-template-columns: 1fr; }
+    .poles-hero { order: -1; }
+  }
+  .slots-panel { display: flex; flex-direction: column; gap: 12px; }
+  .slot-row {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .slot-row-header { display: flex; align-items: center; gap: 10px; }
+  .slot-indicator {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.12);
+    flex-shrink: 0;
+    transition: background-color 0.28s ease;
+  }
+  .slot-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .slot-swatches { display: flex; gap: 7px; flex-wrap: wrap; }
+  .slot-swatch {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .slot-swatch:hover { transform: scale(1.12); }
+  .slot-swatch.active { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+  .poles-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 80px;
+  }
+
+  /* ── SCREEN 5: FINISH ── */
+  .finish-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 24px;
+    align-items: start;
+  }
+  @media (max-width: 700px) { .finish-layout { grid-template-columns: 1fr; } }
+  .summary-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .summary-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+  }
+  .summary-swatch {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .summary-color-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    flex: 1;
+  }
+  .summary-counts { font-size: 0.78rem; color: var(--ink-mid); text-align: right; }
+  .finish-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .congrats-msg {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .congrats-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    margin-bottom: 22px;
+  }
+
+  /* ── SHARED LAYOUT ── */
+  .screen-body {
+    flex: 1;
+    padding: 28px 32px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .screen-header { margin-bottom: 4px; }
+  .bottom-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 36px;
+    padding-top: 22px;
+    border-top: 1.5px solid rgba(0,0,0,0.08);
+  }
+  @media (max-width: 600px) {
+    .screen-body { padding: 18px 14px 60px; }
+    .nav-bar { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: LANDING
+     ══════════════════════════════════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-inner">
+    <div class="landing-eyebrow">The Modular Ring System</div>
+    <div class="landing-wordmark">
+      <span class="wm-brand">
+        <span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span>
+      </span>
+      <span class="wm-product">poles</span>
+    </div>
+    <div class="landing-poles-preview" id="landing-preview"></div>
+    <button class="landing-btn" onclick="goTo('palette')">Design Your Poles →</button>
+  </div>
+  <div class="landing-footer">twIIgs · Modular Ski Pole System</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: CHOOSE PALETTE
+     ══════════════════════════════════════ -->
+<div id="screen-palette" class="screen">
+  <nav class="nav-bar">
+    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <div class="nav-steps" id="nav-steps-palette"></div>
+    <div style="width:60px"></div>
+  </nav>
+  <div class="screen-body">
+    <div class="screen-header">
+      <div class="step-label">Step 1 of 3</div>
+      <div class="step-title">Choose a Palette</div>
+    </div>
+    <div class="palette-grid" id="palette-grid"></div>
+    <div class="bottom-nav">
+      <button class="btn btn-outline" onclick="goTo('landing')">← Back</button>
+      <button class="btn" onclick="goTo('pattern')">Next: Pattern →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: CHOOSE PATTERN
+     ══════════════════════════════════════ -->
+<div id="screen-pattern" class="screen">
+  <nav class="nav-bar">
+    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <div class="nav-steps" id="nav-steps-pattern"></div>
+    <div style="width:60px"></div>
+  </nav>
+  <div class="screen-body">
+    <div class="screen-header">
+      <div class="step-label">Step 2 of 3</div>
+      <div class="step-title">Choose a Pattern</div>
+    </div>
+    <div class="pattern-grid" id="pattern-grid"></div>
+    <div class="bottom-nav">
+      <button class="btn btn-outline" onclick="goTo('palette')">← Back</button>
+      <button class="btn" onclick="goTo('colors')">Next: Colors →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4: ASSIGN COLORS
+     ══════════════════════════════════════ -->
+<div id="screen-colors" class="screen">
+  <nav class="nav-bar">
+    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <div class="nav-steps" id="nav-steps-colors"></div>
+    <div style="width:60px"></div>
+  </nav>
+  <div class="screen-body">
+    <div class="screen-header">
+      <div class="step-label">Step 3 of 3</div>
+      <div class="step-title">Assign Your Colors</div>
+    </div>
+    <div class="colors-layout">
+      <div class="slots-panel" id="slots-panel"></div>
+      <div class="poles-hero">
+        <div class="poles-wrapper" id="poles-live"></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="btn btn-outline" onclick="goTo('pattern')">← Back</button>
+      <button class="btn btn-accent" onclick="goTo('finish')">Finish Design →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 5: FINISH
+     ══════════════════════════════════════ -->
+<div id="screen-finish" class="screen">
+  <nav class="nav-bar">
+    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <div style="width:60px"></div>
+    <div style="width:60px"></div>
+  </nav>
+  <div class="screen-body">
+    <div class="congrats-msg">Your Poles<br>Are Ready.</div>
+    <div class="congrats-sub">Here's your custom ring configuration</div>
+    <div class="finish-layout">
+      <div><div class="poles-wrapper" id="poles-final"></div></div>
+      <div>
+        <div class="summary-title">Ring Summary</div>
+        <div id="summary-rows"></div>
+        <div class="finish-actions">
+          <button class="btn btn-outline" onclick="goTo('colors')">← Edit Colors</button>
+          <button class="btn btn-accent" onclick="startOver()">Start Over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════════
+   STATE
+   ══════════════════════════════════════════════ */
+const state = {
+  selectedPalette: 0,
+  selectedPattern: 0,
+  // slotColors[i] = which palette color index (0–5) is assigned to slot i
+  slotColors: [0, 1, 2, 3, 4, 5]
+};
+
+/* ══════════════════════════════════════════════
+   RING SIZE LAYOUT
+   Big ring positions are 0-indexed: 0, 10, 19, 28, 34
+   (These map to P1, P11, P20, P29, P35 in 1-indexed terms)
+   ══════════════════════════════════════════════ */
+const BIG_POSITIONS = new Set([0, 10, 19, 28, 34]);
+function isBig(pos) { return BIG_POSITIONS.has(pos); }
+
+/* ══════════════════════════════════════════════
+   // === PALETTE COLORS — EDIT HERE ===
+   Each palette has exactly 6 colors (C1–C6).
+   Replace any hex code to change a color.
+   ══════════════════════════════════════════════ */
+const PALETTES = [
+  {
+    name: "Powder Day Breakdown",
+    colors: ["#9ecafb", "#822b40", "#b1c3ea", "#eafef3", "#f3f3a3", "#000000"]
+    //        C1-sky     C2-burg    C3-periw   C4-mint    C5-straw   C6-jet
+  },
+  {
+    name: "Après Ski Therapy",
+    colors: ["#c0d9fb", "#f0d1a5", "#4e546a", "#6c3340", "#ffd2e8", "#000000"]
+    //        C1-powder  C2-peach   C3-slate   C4-wine    C5-blush   C6-jet
+  },
+  {
+    name: "Lost On A Blue Run",
+    colors: ["#ff944a", "#fce763", "#f63338", "#c984ca", "#6a9184", "#000000"]
+    //        C1-tang    C2-lemon   C3-flame   C4-orchid  C5-sage    C6-jet
+  }
+];
+
+/* ══════════════════════════════════════════════
+   COLOR NAMES — used in the finish summary
+   6 names per palette, matching the color order above
+   ══════════════════════════════════════════════ */
+const COLOR_NAMES = [
+  ["Sky", "Burgundy", "Periwinkle", "Mint", "Straw", "Jet"],
+  ["Powder", "Peach", "Slate", "Wine", "Blush", "Jet"],
+  ["Tangerine", "Lemon", "Flame", "Orchid", "Sage", "Jet"]
+];
+
+/* ══════════════════════════════════════════════
+   // === PATTERNS — EDIT HERE ===
+   38 values per pole. Each value is a slot index:
+     0 = Color 1 (C1), 1 = C2, 2 = C3, 3 = C4, 4 = C5, 5 = C6
+   Array index = ring position - 1  (so index 0 = P1, index 37 = P38)
+   Big ring positions (1-indexed): P1, P11, P20, P29, P35
+   ══════════════════════════════════════════════ */
+const PATTERNS = [
+  {
+    name: "Rhythm",
+    // Slot values: 0=C1, 1=C2, 2=C3, 3=C4, 4=C5 — big rings at P1,P11,P20,P29,P35
+    pole1: [
+    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
+       0,   1,   0,   2,   3,   4,   1,   0,   2,   3,
+    // P11  P12  P13  P14  P15  P16  P17  P18  P19
+       0,   1,   0,   2,   3,   1,   0,   2,   3,
+    // P20  P21  P22  P23  P24  P25  P26  P27  P28
+       0,   1,   0,   2,   3,   1,   0,   2,   3,
+    // P29  P30  P31  P32  P33  P34
+       0,   1,   0,   2,   3,   1,
+    // P35  P36  P37  P38
+       0,   0,   3,   4
+    ],
+    pole2: [
+    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
+       0,   3,   2,   0,   1,   4,   3,   2,   0,   1,
+    // P11  P12  P13  P14  P15  P16  P17  P18  P19
+       0,   3,   2,   0,   1,   3,   2,   0,   1,
+    // P20  P21  P22  P23  P24  P25  P26  P27  P28
+       0,   3,   2,   0,   1,   3,   2,   0,   1,
+    // P29  P30  P31  P32  P33  P34
+       0,   3,   2,   0,   1,   3,
+    // P35  P36  P37  P38
+       0,   1,   2,   4
+    ]
+  },
+  {
+    name: "Signal",
+    // C2-heavy with C1/C5 flash accents
+    pole1: [
+    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
+       0,   1,   1,   2,   3,   4,   0,   4,   1,   1,
+    // P11  P12  P13  P14  P15  P16  P17  P18  P19
+       1,   1,   1,   2,   4,   0,   4,   1,   1,
+    // P20  P21  P22  P23  P24  P25  P26  P27  P28
+       1,   1,   1,   4,   3,   4,   1,   1,   1,
+    // P29  P30  P31  P32  P33  P34
+       1,   1,   1,   4,   1,   1,
+    // P35  P36  P37  P38
+       0,   1,   4,   3
+    ],
+    pole2: [
+    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
+       0,   1,   1,   2,   4,   3,   0,   3,   1,   1,
+    // P11  P12  P13  P14  P15  P16  P17  P18  P19
+       1,   1,   1,   2,   3,   0,   3,   1,   1,
+    // P20  P21  P22  P23  P24  P25  P26  P27  P28
+       1,   1,   1,   3,   4,   3,   1,   1,   1,
+    // P29  P30  P31  P32  P33  P34
+       1,   1,   1,   3,   1,   1,
+    // P35  P36  P37  P38
+       0,   1,   3,   4
+    ]
+  },
+  {
+    name: "Accent",
+    // C1 body; C2 marks big rings on pole 1, C3 marks big rings on pole 2
+    pole1: [
+    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
+       1,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    // P11  P12  P13  P14  P15  P16  P17  P18  P19
+       1,   0,   0,   0,   0,   0,   0,   0,   0,
+    // P20  P21  P22  P23  P24  P25  P26  P27  P28
+       1,   0,   0,   0,   0,   0,   0,   0,   0,
+    // P29  P30  P31  P32  P33  P34
+       1,   0,   0,   0,   0,   0,
+    // P35  P36  P37  P38
+       1,   0,   2,   0
+    ],
+    pole2: [
+    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
+       2,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    // P11  P12  P13  P14  P15  P16  P17  P18  P19
+       2,   0,   0,   0,   0,   0,   0,   0,   0,
+    // P20  P21  P22  P23  P24  P25  P26  P27  P28
+       2,   0,   0,   0,   0,   0,   0,   0,   0,
+    // P29  P30  P31  P32  P33  P34
+       2,   0,   0,   0,   0,   0,
+    // P35  P36  P37  P38
+       2,   0,   1,   0
+    ]
+  }
+];
+
+/* Safety: ensure all patterns are exactly 38 rings */
+PATTERNS.forEach(p => {
+  while (p.pole1.length < 38) p.pole1.push(0);
+  while (p.pole2.length < 38) p.pole2.push(0);
+  p.pole1 = p.pole1.slice(0, 38);
+  p.pole2 = p.pole2.slice(0, 38);
+});
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════ */
+const ALL_SCREENS = ['landing','palette','pattern','colors','finish'];
+const STEP_SCREENS = ['palette','pattern','colors'];
+
+function goTo(screenId) {
+  ALL_SCREENS.forEach(id => {
+    const el = document.getElementById('screen-' + id);
+    if (el) el.classList.toggle('active', id === screenId);
+  });
+  window.scrollTo(0, 0);
+  if (screenId === 'palette') buildPaletteScreen();
+  if (screenId === 'pattern') buildPatternScreen();
+  if (screenId === 'colors')  buildColorsScreen();
+  if (screenId === 'finish')  buildFinishScreen();
+}
+
+function startOver() {
+  state.selectedPalette = 0;
+  state.selectedPattern = 0;
+  state.slotColors = [0,1,2,3,4,5];
+  goTo('landing');
+}
+
+/* ══════════════════════════════════════════════
+   NAV DOTS
+   ══════════════════════════════════════════════ */
+function renderNavDots(containerId, currentStep) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = STEP_SCREENS.map((s, i) => {
+    let cls = 'nav-dot';
+    if (i < currentStep) cls += ' done';
+    if (i === currentStep) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════
+   POLE RENDERING
+   size: 'landing' | 'mini' | 'normal' | 'large'
+   ══════════════════════════════════════════════ */
+function getColor(slotIndex) {
+  const pal = PALETTES[state.selectedPalette].colors;
+  const colorIdx = state.slotColors[slotIndex] ?? 0;
+  return pal[colorIdx] ?? '#ccc';
+}
+
+function renderPoleHTML(poleArray, size) {
+  // smallW = width of small rings; bigW = 1.6× small
+  // shaftW = shaft width (should be ≤ smallW); shaftH = visible shaft length
+  const S = {
+    landing: { smallW: 28, bigW: 45,  h: 9,  gap: 1.5, shaftW: 10, shaftH: 72 },
+    mini:    { smallW: 16, bigW: 26,  h: 5,  gap: 1.0, shaftW: 6,  shaftH: 44 },
+    normal:  { smallW: 36, bigW: 58,  h: 11, gap: 1.8, shaftW: 12, shaftH: 64 },
+    large:   { smallW: 42, bigW: 67,  h: 12, gap: 2.0, shaftW: 14, shaftH: 78 }
+  }[size] || { smallW: 36, bigW: 58, h: 11, gap: 1.8, shaftW: 12, shaftH: 64 };
+
+  let rings = '';
+  poleArray.forEach((slotIdx, i) => {
+    const color = getColor(slotIdx);
+    const w = isBig(i) ? S.bigW : S.smallW;
+    rings += `<div class="ring" style="
+      width:${w}px;
+      height:${S.h}px;
+      background-color:${color};
+      margin-bottom:${S.gap}px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.22),inset 0 1px 0 rgba(255,255,255,0.14);
+    "></div>`;
+  });
+
+  return `
+    <div class="pole-body">
+      <div class="pole-rings">${rings}</div>
+      <div class="pole-shaft" style="width:${S.shaftW}px;height:${S.shaftH}px;"></div>
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════════
+   LANDING PREVIEW
+   ══════════════════════════════════════════════ */
+function buildLandingPreview() {
+  const el = document.getElementById('landing-preview');
+  if (!el) return;
+  // Temporarily use palette 0 + default slots for the preview
+  const origPal = state.selectedPalette;
+  const origSlots = [...state.slotColors];
+  state.selectedPalette = 0;
+  state.slotColors = [0,1,2,3,4,5];
+  const p = PATTERNS[0];
+  el.innerHTML = `
+    <div class="pole-col">${renderPoleHTML(p.pole1, 'landing')}</div>
+    <div class="pole-col">${renderPoleHTML(p.pole2, 'landing')}</div>
+  `;
+  state.selectedPalette = origPal;
+  state.slotColors = origSlots;
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN 2: PALETTE
+   ══════════════════════════════════════════════ */
+function buildPaletteScreen() {
+  renderNavDots('nav-steps-palette', 0);
+  document.getElementById('palette-grid').innerHTML = PALETTES.map((pal, i) => `
+    <div class="palette-card ${state.selectedPalette === i ? 'selected' : ''}"
+         onclick="selectPalette(${i})">
+      <div class="palette-name">${pal.name}</div>
+      <div class="palette-swatches">
+        ${pal.colors.map(c => `<div class="swatch" style="background:${c}" title="${c}"></div>`).join('')}
+      </div>
+      <div class="palette-selected-mark">✓ Selected</div>
+    </div>
+  `).join('');
+}
+
+function selectPalette(idx) {
+  state.selectedPalette = idx;
+  state.slotColors = [0,1,2,3,4,5]; // reset when palette changes
+  buildPaletteScreen();
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN 3: PATTERN
+   ══════════════════════════════════════════════ */
+function buildPatternScreen() {
+  renderNavDots('nav-steps-pattern', 1);
+  document.getElementById('pattern-grid').innerHTML = PATTERNS.map((pat, i) => `
+    <div class="pattern-card ${state.selectedPattern === i ? 'selected' : ''}"
+         onclick="selectPattern(${i})">
+      <div class="pattern-name">${pat.name}</div>
+      <div class="mini-poles-wrap">
+        <div class="pole-col">${renderPoleHTML(pat.pole1, 'mini')}</div>
+        <div class="pole-col">${renderPoleHTML(pat.pole2, 'mini')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectPattern(idx) {
+  state.selectedPattern = idx;
+  buildPatternScreen();
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN 4: COLOR ASSIGNMENT
+   ══════════════════════════════════════════════ */
+function buildColorsScreen() {
+  renderNavDots('nav-steps-colors', 2);
+  const pal = PALETTES[state.selectedPalette];
+  const pat = PATTERNS[state.selectedPattern];
+
+  // Figure out how many distinct slots this pattern actually uses
+  const usedSlots = new Set([...pat.pole1, ...pat.pole2]);
+  const numSlots = Math.max(...usedSlots) + 1;
+
+  document.getElementById('slots-panel').innerHTML = `
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;
+                letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-light);
+                margin-bottom:2px;">
+      Tap a swatch to assign each color
+    </div>
+    ${Array.from({ length: numSlots }, (_, slotIdx) => {
+      const currentColorIdx = state.slotColors[slotIdx] ?? slotIdx;
+      return `
+        <div class="slot-row">
+          <div class="slot-row-header">
+            <div class="slot-indicator" style="background:${pal.colors[currentColorIdx]}"></div>
+            <div class="slot-name">Color ${slotIdx + 1}</div>
+          </div>
+          <div class="slot-swatches">
+            ${pal.colors.map((c, ci) => `
+              <div class="slot-swatch ${state.slotColors[slotIdx] === ci ? 'active' : ''}"
+                   style="background:${c}"
+                   onclick="assignSlotColor(${slotIdx}, ${ci})"
+                   title="${c}"></div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+
+  updateLivePoles();
+}
+
+function assignSlotColor(slotIdx, colorIdx) {
+  state.slotColors[slotIdx] = colorIdx;
+  buildColorsScreen();
+}
+
+function updateLivePoles() {
+  const pat = PATTERNS[state.selectedPattern];
+  const container = document.getElementById('poles-live');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="pole-col">
+      <div class="pole-label">Pole 1</div>
+      ${renderPoleHTML(pat.pole1, 'normal')}
+    </div>
+    <div class="pole-col">
+      <div class="pole-label">Pole 2</div>
+      ${renderPoleHTML(pat.pole2, 'normal')}
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN 5: FINISH
+   ══════════════════════════════════════════════ */
+function buildFinishScreen() {
+  const pat = PATTERNS[state.selectedPattern];
+  const pal = PALETTES[state.selectedPalette];
+  const names = COLOR_NAMES[state.selectedPalette];
+
+  // Render final poles
+  document.getElementById('poles-final').innerHTML = `
+    <div class="pole-col">
+      <div class="pole-label">Pole 1</div>
+      ${renderPoleHTML(pat.pole1, 'large')}
+    </div>
+    <div class="pole-col">
+      <div class="pole-label">Pole 2</div>
+      ${renderPoleHTML(pat.pole2, 'large')}
+    </div>
+  `;
+
+  // Tally rings per resolved color
+  const colorMap = {};
+  function tally(arr) {
+    arr.forEach((slotIdx, pos) => {
+      const colorIdx = state.slotColors[slotIdx] ?? slotIdx;
+      const hex = pal.colors[colorIdx];
+      if (!colorMap[hex]) colorMap[hex] = { name: names[colorIdx], small: 0, big: 0 };
+      if (isBig(pos)) colorMap[hex].big++;
+      else colorMap[hex].small++;
+    });
+  }
+  tally(pat.pole1);
+  tally(pat.pole2);
+
+  document.getElementById('summary-rows').innerHTML =
+    Object.entries(colorMap).map(([hex, d]) => `
+      <div class="summary-row">
+        <div class="summary-swatch" style="background:${hex}"></div>
+        <div class="summary-color-name">${d.name}</div>
+        <div class="summary-counts">${d.small} small · ${d.big} big</div>
+      </div>
+    `).join('');
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════ */
+buildLandingPreview();
+</script>
+</body>
+</html>

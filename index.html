@@ -319,10 +319,6 @@
     margin-top: 20px;
     align-items: start;
   }
-  @media (max-width: 700px) {
-    .colors-layout { grid-template-columns: 1fr; }
-    .poles-hero { order: -1; }
-  }
   .slots-panel { display: flex; flex-direction: column; gap: 12px; }
   .slot-row {
     background: var(--white);
@@ -358,6 +354,8 @@
   }
   .slot-swatch:hover { transform: scale(1.12); }
   .slot-swatch.active { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+
+  /* Desktop: poles column sticky beside the slots */
   .poles-hero {
     display: flex;
     flex-direction: column;
@@ -365,6 +363,33 @@
     gap: 12px;
     position: sticky;
     top: 80px;
+  }
+
+  /* Mobile poles sticky bar — shown only on small screens */
+  .mobile-poles-bar {
+    display: none;
+  }
+
+  @media (max-width: 700px) {
+    /* Single-column slots, no top margin (bar provides spacing) */
+    .colors-layout { grid-template-columns: 1fr; margin-top: 12px; }
+
+    /* Hide the in-grid poles column on mobile */
+    .poles-hero { display: none; }
+
+    /* Compact sticky poles preview pinned just below the nav */
+    .mobile-poles-bar {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 28px;
+      padding: 10px 16px 8px;
+      background: var(--bg);
+      border-bottom: 1.5px solid rgba(0,0,0,0.08);
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+    }
   }
 
   /* ── SCREEN 5: FINISH ── */
@@ -521,6 +546,8 @@
     <div class="nav-steps" id="nav-steps-colors"></div>
     <div style="width:60px"></div>
   </nav>
+  <!-- Mobile-only: compact poles preview pinned below the nav bar -->
+  <div class="mobile-poles-bar" id="mobile-poles-bar"></div>
   <div class="screen-body">
     <div class="screen-header">
       <div class="step-label">Step 3 of 3</div>
@@ -528,6 +555,7 @@
     </div>
     <div class="colors-layout">
       <div class="slots-panel" id="slots-panel"></div>
+      <!-- Desktop only: poles column sticky beside slots -->
       <div class="poles-hero">
         <div class="poles-wrapper" id="poles-live"></div>
       </div>
@@ -914,18 +942,30 @@ function assignSlotColor(slotIdx, colorIdx) {
 
 function updateLivePoles() {
   const pat = PATTERNS[state.selectedPattern];
+
+  // Desktop poles column
   const container = document.getElementById('poles-live');
-  if (!container) return;
-  container.innerHTML = `
-    <div class="pole-col">
-      <div class="pole-label">Pole 1</div>
-      ${renderPoleHTML(pat.pole1, 'normal')}
-    </div>
-    <div class="pole-col">
-      <div class="pole-label">Pole 2</div>
-      ${renderPoleHTML(pat.pole2, 'normal')}
-    </div>
-  `;
+  if (container) {
+    container.innerHTML = `
+      <div class="pole-col">
+        <div class="pole-label">Pole 1</div>
+        ${renderPoleHTML(pat.pole1, 'normal')}
+      </div>
+      <div class="pole-col">
+        <div class="pole-label">Pole 2</div>
+        ${renderPoleHTML(pat.pole2, 'normal')}
+      </div>
+    `;
+  }
+
+  // Mobile sticky bar — uses 'mini' size so it fits in the compact strip
+  const mobileBar = document.getElementById('mobile-poles-bar');
+  if (mobileBar) {
+    mobileBar.innerHTML = `
+      <div class="pole-col">${renderPoleHTML(pat.pole1, 'mini')}</div>
+      <div class="pole-col">${renderPoleHTML(pat.pole2, 'mini')}</div>
+    `;
+  }
 }
 
 /* ══════════════════════════════════════════════

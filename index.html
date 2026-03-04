@@ -2,1020 +2,1786 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>twIIgs — Design Your Poles</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>twIIgs — Custom Ski Poles</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F5F0E8;
-    --ink: #1A1A1A;
-    --ink-mid: #555;
-    --ink-light: #999;
-    --white: #FFFFFF;
-    --evergreen: #3D6B4A;
-    --radius-md: 10px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.10);
-    --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
-    --transition: 0.2s ease;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Barlow', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
 
-  /* ── SCREEN MANAGEMENT ── */
-  .screen { display: none; min-height: 100vh; flex-direction: column; }
-  .screen.active { display: flex; }
+/* ═══════════════════════════════════════════
+   ROOT
+   ═══════════════════════════════════════════ */
+:root {
+  --bg:      #F5F0E8;
+  --card:    #FFFFFF;
+  --ink:     #1A1A1A;
+  --mid:     #666;
+  --lite:    #AAA;
+  --green:   #3D6B4A;
+  --land-bg: #0F1014;
+  --myst-bg: #0C0E12;
+  --r:       10px;
+  --sh:      0 2px 12px rgba(0,0,0,0.08);
+  --shm:     0 6px 28px rgba(0,0,0,0.13);
+  --shl:     0 14px 52px rgba(0,0,0,0.22);
+  --t:       0.17s ease;
+  --nav-h:   54px;
+}
 
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-block;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 14px 36px;
-    border-radius: 4px;
-    border: 2px solid var(--ink);
-    background: var(--ink);
-    color: var(--white);
-    cursor: pointer;
-    transition: all var(--transition);
-    user-select: none;
-  }
-  .btn:hover { background: transparent; color: var(--ink); }
-  .btn.btn-outline { background: transparent; color: var(--ink); }
-  .btn.btn-outline:hover { background: var(--ink); color: var(--white); }
-  .btn.btn-accent { background: var(--evergreen); border-color: var(--evergreen); }
-  .btn.btn-accent:hover { background: transparent; color: var(--evergreen); }
+/* ═══════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--land-bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  /* ── TYPOGRAPHY HELPERS ── */
-  .step-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-  }
-  .step-title {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    line-height: 1;
-    margin-top: 4px;
-  }
+/* ═══════════════════════════════════════════
+   SCREENS
+   ═══════════════════════════════════════════ */
+.screen { display: none; }
+.screen.active { display: flex; flex-direction: column; }
 
-  /* ── NAV BAR ── */
-  .nav-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 32px;
-    border-bottom: 1.5px solid rgba(0,0,0,0.08);
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 100;
-  }
-  .logotype {
-    font-family: 'Anton', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    line-height: 1;
-  }
-  .logotype .lw { color: var(--ink); }
-  .logotype .li { color: var(--evergreen); }
+/* Scrollable screens */
+#s-land.active,
+#s-looks.active,
+#s-mystery.active { min-height: 100vh; }
 
-  .nav-steps { display: flex; gap: 6px; align-items: center; }
-  .nav-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.15);
-    transition: all var(--transition);
-  }
-  .nav-dot.active { background: var(--ink); width: 24px; border-radius: 4px; }
-  .nav-dot.done { background: var(--ink-mid); }
+/* Customizer locked to viewport */
+#s-cust.active {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
 
-  /* ── POLE VISUALIZATION ── */
-  .poles-wrapper {
-    display: flex;
-    gap: clamp(16px, 4vw, 50px);
-    align-items: flex-start;
-    justify-content: center;
-  }
-  .pole-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .pole-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink-mid);
-    margin-bottom: 8px;
-  }
-  /* pole-body centers shaft under rings */
-  .pole-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .pole-rings {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .ring {
-    border-radius: 999px;
-    transition: background-color 0.28s ease;
-    position: relative;
-    flex-shrink: 0;
-  }
-  .ring::after {
-    content: '';
-    position: absolute;
-    top: 14%; left: 11%;
-    width: 34%; height: 32%;
-    background: rgba(255,255,255,0.18);
-    border-radius: 999px;
-    pointer-events: none;
-  }
-  .pole-shaft {
-    border-radius: 0 0 4px 4px;
-    background: #252525;
-    flex-shrink: 0;
-  }
+/* ═══════════════════════════════════════════
+   LOGOTYPE
+   ═══════════════════════════════════════════ */
+.logo {
+  font-family: 'Anton', sans-serif;
+  font-size: 1rem; letter-spacing: 0.14em;
+  text-transform: uppercase; line-height: 1;
+  user-select: none;
+}
+.logo .lw { color: inherit; }
+.logo .li { color: var(--green); }
+.logo.dark .lw { color: #fff; }
+.logo.dark .li { color: #7ecfa0; }
 
-  /* ── SCREEN 1: LANDING ── */
-  #screen-landing { background: var(--bg); }
-  .landing-inner {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 24px 20px;
-  }
-  .landing-eyebrow {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    margin-bottom: 14px;
-  }
-  .landing-wordmark {
-    font-family: 'Anton', sans-serif;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    line-height: 0.88;
-    margin-bottom: 4px;
-  }
-  .landing-wordmark .wm-brand {
-    font-size: clamp(4rem, 14vw, 10rem);
-    display: block;
-  }
-  .landing-wordmark .wm-product {
-    font-size: clamp(2rem, 7vw, 5.5rem);
-    display: block;
-    letter-spacing: 0.1em;
-    color: var(--evergreen);
-  }
-  .landing-wordmark .lw { color: var(--ink); }
-  .landing-wordmark .li { color: var(--evergreen); }
+/* ═══════════════════════════════════════════
+   SHARED NAV BAR
+   ═══════════════════════════════════════════ */
+.nav {
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px;
+  background: var(--bg);
+  border-bottom: 1.5px solid rgba(0,0,0,0.07);
+  flex-shrink: 0; z-index: 100;
+}
 
-  .landing-poles-preview {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin: 32px 0 36px;
-  }
-  .landing-btn {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    padding: 16px 52px;
-    border-radius: 4px;
-    border: 2px solid var(--ink);
-    background: var(--ink);
-    color: var(--white);
-    cursor: pointer;
-    transition: all var(--transition);
-  }
-  .landing-btn:hover { background: transparent; color: var(--ink); }
-  .landing-footer {
-    padding: 20px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    color: var(--ink-light);
-    text-transform: uppercase;
-    text-align: center;
-  }
+/* ═══════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 0.9rem; letter-spacing: 0.13em;
+  text-transform: uppercase;
+  min-height: 44px; padding: 0 22px;
+  border-radius: 5px; border: 2px solid var(--ink);
+  background: var(--ink); color: #fff;
+  cursor: pointer; transition: all var(--t);
+  user-select: none; white-space: nowrap;
+}
+.btn:hover  { background: transparent; color: var(--ink); }
+.btn:active { transform: scale(0.97); opacity: 0.9; }
+.btn.ghost  { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: #fff; }
+.btn.green  {
+  background: var(--green); border-color: var(--green);
+  box-shadow: 0 4px 16px rgba(61,107,74,0.3);
+}
+.btn.green:hover { background: transparent; color: var(--green); box-shadow: none; }
+.btn.sm     { min-height: 36px; padding: 0 14px; font-size: 0.8rem; }
 
-  /* ── SCREEN 2: PALETTE ── */
-  .palette-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 14px;
-    margin-top: 28px;
-  }
-  .palette-card {
-    border: 2px solid transparent;
-    border-radius: var(--radius-md);
-    padding: 20px;
-    background: var(--white);
-    cursor: pointer;
-    transition: all var(--transition);
-    box-shadow: var(--shadow);
-  }
-  .palette-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .palette-card.selected { border-color: var(--ink); box-shadow: var(--shadow-lg); }
-  .palette-name {
-    font-family: 'Anton', sans-serif;
-    font-size: 1.25rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-  .palette-swatches { display: flex; gap: 6px; }
-  .swatch {
-    flex: 1;
-    height: 38px;
-    border-radius: 6px;
-    border: 1.5px solid rgba(0,0,0,0.08);
-    transition: transform var(--transition);
-  }
-  .palette-selected-mark {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--evergreen);
-    opacity: 0;
-    margin-top: 10px;
-    transition: opacity var(--transition);
-  }
-  .palette-card.selected .palette-selected-mark { opacity: 1; }
+/* ═══════════════════════════════════════════
+   POLE RENDERING — shared primitives
+   ═══════════════════════════════════════════ */
+.poles-wrap {
+  display: flex;
+  gap: clamp(14px, 4vw, 48px);
+  align-items: flex-start;
+  justify-content: center;
+}
+.pole-col { display: flex; flex-direction: column; align-items: center; }
+.pole-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--lite); margin-bottom: 5px;
+}
+.pole-body  { display: flex; flex-direction: column; align-items: center; }
+.pole-rings { display: flex; flex-direction: column; align-items: center; }
 
-  /* ── SCREEN 3: PATTERN ── */
-  .pattern-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-    gap: 14px;
-    margin-top: 28px;
-  }
-  .pattern-card {
-    border: 2px solid transparent;
-    border-radius: var(--radius-md);
-    padding: 20px 14px;
-    background: var(--white);
-    cursor: pointer;
-    transition: all var(--transition);
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  .pattern-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .pattern-card.selected { border-color: var(--ink); }
-  .pattern-name {
-    font-family: 'Anton', sans-serif;
-    font-size: 1.15rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .mini-poles-wrap {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    align-items: flex-start;
-  }
+.ring {
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
+  position: relative; flex-shrink: 0;
+}
+.ring::after {
+  content: ''; position: absolute;
+  top: 12%; left: 9%; width: 30%; height: 36%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 999px; pointer-events: none;
+}
+.ring.tap {
+  cursor: pointer;
+  transition: background-color 0.18s, transform 0.1s, outline 0.1s;
+}
+.ring.tap:hover  { transform: scaleX(1.07); }
+.ring.tap:active { transform: scaleX(0.95); }
 
-  /* ── SCREEN 4: COLORS ── */
-  .colors-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-    margin-top: 20px;
-    align-items: start;
-  }
-  .slots-panel { display: flex; flex-direction: column; gap: 12px; }
-  .slot-row {
-    background: var(--white);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .slot-row-header { display: flex; align-items: center; gap: 10px; }
-  .slot-indicator {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    border: 2px solid rgba(0,0,0,0.12);
-    flex-shrink: 0;
-    transition: background-color 0.28s ease;
-  }
-  .slot-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 0.92rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .slot-swatches { display: flex; gap: 7px; flex-wrap: wrap; }
-  .slot-swatch {
-    width: 30px; height: 30px;
-    border-radius: 6px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: all var(--transition);
-  }
-  .slot-swatch:hover { transform: scale(1.12); }
-  .slot-swatch.active { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+/* Scratch: currently-selected ring */
+.ring.sel {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  transform: scaleX(1.1) !important;
+  z-index: 2;
+}
 
-  /* Desktop: poles column sticky beside the slots */
-  .poles-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    position: sticky;
-    top: 80px;
-  }
+.pole-shaft {
+  border-radius: 0 0 4px 4px;
+  background: #1E1E1E;
+  flex-shrink: 0;
+}
 
-  /* Mobile poles sticky bar — shown only on small screens */
-  .mobile-poles-bar {
-    display: none;
-  }
+/* Affordance pulse (fires once on load) */
+@keyframes affPulse {
+  0%   { transform: scaleX(1); }
+  40%  { transform: scaleX(1.10); }
+  70%  { transform: scaleX(0.95); }
+  100% { transform: scaleX(1); }
+}
+.ring.pulse { animation: affPulse 0.5s ease forwards; }
 
-  @media (max-width: 700px) {
-    /* Single-column slots, no top margin (bar provides spacing) */
-    .colors-layout { grid-template-columns: 1fr; margin-top: 12px; }
+/* ═══════════════════════════════════════════
+   SCREEN: LANDING
+   ═══════════════════════════════════════════ */
+#s-land { background: var(--land-bg); }
 
-    /* Hide the in-grid poles column on mobile */
-    .poles-hero { display: none; }
+.land-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 0;
+}
+.land-tagline {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
 
-    /* Compact sticky poles preview pinned just below the nav */
-    .mobile-poles-bar {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 28px;
-      padding: 10px 16px 8px;
-      background: var(--bg);
-      border-bottom: 1.5px solid rgba(0,0,0,0.08);
-      position: sticky;
-      top: 57px;
-      z-index: 90;
-    }
-  }
+.land-cards {
+  flex: 1; display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 20px 16px;
+}
+@media (max-width: 580px) {
+  .land-cards { grid-template-columns: 1fr; gap: 10px; }
+}
 
-  /* ── SCREEN 5: FINISH ── */
-  .finish-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    margin-top: 24px;
-    align-items: start;
-  }
-  @media (max-width: 700px) { .finish-layout { grid-template-columns: 1fr; } }
-  .summary-title {
-    font-family: 'Anton', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-  .summary-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    background: var(--white);
-    border-radius: var(--radius-md);
-    margin-bottom: 8px;
-    box-shadow: var(--shadow);
-  }
-  .summary-swatch {
-    width: 26px; height: 26px;
-    border-radius: 6px;
-    border: 1.5px solid rgba(0,0,0,0.08);
-    flex-shrink: 0;
-  }
-  .summary-color-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-    flex: 1;
-  }
-  .summary-counts { font-size: 0.78rem; color: var(--ink-mid); text-align: right; }
-  .finish-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
-  .congrats-msg {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(1.6rem, 4vw, 2.8rem);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    line-height: 1.1;
-    margin-bottom: 6px;
-  }
-  .congrats-sub {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-mid);
-    margin-bottom: 22px;
-  }
+.land-card {
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 46vh; display: flex; flex-direction: column;
+}
+.land-card:hover  { transform: translateY(-4px); box-shadow: var(--shl); }
+.land-card:active { transform: translateY(-1px); }
+.land-card-custom  { background: var(--bg);      border: 2px solid rgba(255,255,255,0.08); }
+.land-card-mystery { background: var(--myst-bg); border: 2px solid rgba(255,255,255,0.05); }
 
-  /* ── SHARED LAYOUT ── */
-  .screen-body {
-    flex: 1;
-    padding: 28px 32px 80px;
-    max-width: 1100px;
-    margin: 0 auto;
-    width: 100%;
+.card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 0; }
+.card-price {
+  font-family: 'Anton', sans-serif;
+  font-size: 1.6rem; letter-spacing: 0.04em; line-height: 1;
+}
+.land-card-custom  .card-price { color: var(--ink); }
+.land-card-mystery .card-price { color: #fff; }
+
+.card-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 20px;
+}
+.land-card-custom  .card-badge { background: rgba(0,0,0,0.07);        color: var(--mid); }
+.land-card-mystery .card-badge { background: rgba(255,255,255,0.08);   color: rgba(255,255,255,0.5); }
+
+.mystery-save-badge {
+  background: #fff; color: var(--myst-bg);
+  font-family: 'Anton', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em;
+  padding: 3px 10px; border-radius: 20px;
+  margin-top: 4px; display: inline-block;
+}
+
+.card-visual {
+  flex: 1; display: flex;
+  align-items: center; justify-content: center;
+  padding: 18px 12px 12px;
+  position: relative; overflow: hidden;
+}
+/* mystery atmospheric glow */
+.land-card-mystery .card-visual::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 60% 35%, rgba(124,77,255,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 25% 75%, rgba(0,180,255,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.qmarks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.qm {
+  position: absolute; font-family: 'Anton', sans-serif;
+  color: rgba(255,255,255,0.06);
+  animation: floatQ var(--dur,6s) var(--del,0s) ease-in-out infinite;
+  user-select: none;
+}
+@keyframes floatQ {
+  0%,100% { transform: translateY(0) rotate(var(--rot,0deg)); opacity: var(--opa,.04); }
+  50%      { transform: translateY(-18px) rotate(calc(var(--rot,0deg)+8deg)); opacity: calc(var(--opa,.04)*3); }
+}
+.qm-big { font-size: clamp(4rem,9vw,7rem); }
+.qm-mid { font-size: clamp(2rem,5vw,3.5rem); }
+.qm-sm  { font-size: clamp(1.2rem,3vw,2rem); }
+
+.card-footer { padding: 10px 18px 18px; display: flex; flex-direction: column; gap: 6px; }
+.card-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(1.1rem,3vw,1.7rem);
+  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+}
+.land-card-custom  .card-title { color: var(--ink); }
+.land-card-mystery .card-title { color: #fff; }
+
+.card-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.land-card-custom  .card-sub { color: var(--mid); }
+.land-card-mystery .card-sub { color: rgba(255,255,255,0.35); }
+
+.card-cta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; margin-top: 4px;
+}
+.land-card-custom  .card-cta { color: var(--green); }
+.land-card-mystery .card-cta { color: rgba(255,255,255,0.55); }
+
+.land-footer {
+  text-align: center; padding: 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN: LOOKS  (choose a look)
+   ═══════════════════════════════════════════ */
+#s-looks { background: var(--bg); }
+
+.looks-body {
+  flex: 1; padding: 20px 16px 36px;
+  max-width: 900px; margin: 0 auto; width: 100%;
+}
+.looks-hed {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 3px;
+}
+.looks-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--lite); margin-bottom: 16px;
+}
+
+.looks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px; margin-bottom: 12px;
+}
+@media (min-width: 520px) {
+  .looks-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.look-card {
+  background: var(--card); border-radius: var(--r);
+  border: 2px solid transparent; padding: 14px 10px 12px;
+  cursor: pointer; transition: all var(--t); box-shadow: var(--sh);
+  display: flex; flex-direction: column; align-items: center;
+  gap: 9px; text-align: center;
+}
+.look-card:hover  { transform: translateY(-3px); box-shadow: var(--shm); border-color: rgba(0,0,0,0.09); }
+.look-card:active { transform: translateY(-1px); }
+
+.look-card-name {
+  font-family: 'Anton', sans-serif;
+  font-size: 0.86rem; letter-spacing: 0.05em;
+  text-transform: uppercase; line-height: 1.15;
+}
+.look-card-cta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--lite); transition: color var(--t);
+}
+.look-card:hover .look-card-cta { color: var(--green); }
+
+/* Scratch option — full-width dark strip */
+.scratch-card {
+  width: 100%; background: var(--ink); border-radius: var(--r);
+  border: 2px dashed rgba(255,255,255,0.12);
+  padding: 18px 20px; cursor: pointer; transition: all var(--t);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.scratch-card:hover  { background: #222; border-color: rgba(255,255,255,0.28); transform: translateY(-2px); }
+.scratch-card:active { transform: translateY(0); }
+
+.scratch-card-text {}
+.scratch-card-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 1.05rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: #fff; line-height: 1.1;
+}
+.scratch-card-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38); margin-top: 3px;
+}
+.scratch-card-cta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN: CUSTOMIZER
+   ═══════════════════════════════════════════ */
+#s-cust { background: var(--bg); }
+
+.cust-nav-back {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: none; color: var(--mid);
+  cursor: pointer; transition: color var(--t);
+  padding: 6px 4px; min-height: 36px;
+}
+.cust-nav-back:hover { color: var(--ink); }
+
+.save-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: none; border: 1.5px solid rgba(0,0,0,0.18);
+  border-radius: 5px; padding: 6px 14px;
+  cursor: pointer; transition: all var(--t); color: var(--ink); min-height: 36px;
+}
+.save-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Body = poles | controls */
+.cust-body {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; min-height: 0;
+}
+
+/* Poles take 68% of the available height on narrow screens */
+.poles-stage {
+  flex: 0 0 68%;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; padding: 10px 12px; position: relative;
+}
+
+/* Controls take the remaining ~32% */
+.controls-panel {
+  flex: 1; min-height: 0;
+  border-top: 1.5px solid rgba(0,0,0,0.08);
+  display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg);
+}
+
+/* Wide: side-by-side, poles 52% width */
+@media (min-width: 740px) {
+  .cust-body {
+    flex-direction: row;
+    height: calc(100vh - var(--nav-h));
+    height: calc(100dvh - var(--nav-h));
   }
-  .screen-header { margin-bottom: 4px; }
-  .bottom-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 36px;
-    padding-top: 22px;
-    border-top: 1.5px solid rgba(0,0,0,0.08);
+  .poles-stage {
+    flex: 0 0 52%;
+    height: 100%;
+    padding: 20px 24px;
+    border-right: 1.5px solid rgba(0,0,0,0.08);
   }
-  @media (max-width: 600px) {
-    .screen-body { padding: 18px 14px 60px; }
-    .nav-bar { padding: 14px 16px; }
+  .controls-panel {
+    flex: 1; border-top: none;
+    overflow-y: auto;
   }
+}
+
+/* ── Mode wrappers ── */
+.ctrl-mode {
+  display: flex; flex-direction: column;
+  flex: 1; min-height: 0; overflow: hidden;
+}
+.ctrl-mode.hidden { display: none; }
+
+/* ──────────────────────────────────────
+   PRESET MODE
+   ────────────────────────────────────── */
+.step-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6px; height: 52px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+.step-arrow {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  font-size: 1.25rem; color: var(--ink);
+  border-radius: 6px; transition: all var(--t); flex-shrink: 0;
+}
+.step-arrow:hover     { background: rgba(0,0,0,0.06); }
+.step-arrow:active    { background: rgba(0,0,0,0.12); }
+.step-arrow:disabled  { color: rgba(0,0,0,0.18); cursor: not-allowed; }
+.step-arrow:disabled:hover { background: none; }
+
+.step-center {
+  flex: 1; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.step-name {
+  font-family: 'Anton', sans-serif;
+  font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1;
+}
+.step-progress {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--lite);
+}
+
+.step-content {
+  flex: 1; overflow-x: auto; overflow-y: hidden;
+  display: flex; align-items: center; padding: 0 14px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.step-content::-webkit-scrollbar { display: none; }
+
+/* Save bar — last step */
+.step-save-bar { display: none; padding: 0 14px 12px; flex-shrink: 0; }
+.step-save-bar.show { display: block; }
+.step-save-bar .btn.green { width: 100%; min-height: 46px; font-size: 0.95rem; }
+
+/* Palette options */
+.step-opts-palette { display: flex; gap: 9px; align-items: flex-start; padding: 10px 0; }
+.pal-opt {
+  background: var(--card); border-radius: 8px;
+  border: 2px solid transparent; padding: 10px 10px 8px;
+  cursor: pointer; transition: all var(--t); box-shadow: var(--sh);
+  display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 1;
+}
+.pal-opt:hover  { box-shadow: var(--shm); border-color: rgba(0,0,0,0.1); }
+.pal-opt:active { transform: scale(0.97); }
+.pal-opt.active { border-color: var(--ink); }
+
+.pal-opt-dots { display: flex; gap: 3px; }
+.pal-dot {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.07); flex-shrink: 0;
+}
+.pal-opt-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.63rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--mid); text-align: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 88px;
+}
+.pal-opt.active .pal-opt-name { color: var(--ink); }
+
+/* Color options */
+.step-opts-color {
+  display: flex; gap: clamp(8px, 2vw, 16px);
+  align-items: flex-start; padding: 10px 0;
+  width: 100%; justify-content: center;
+}
+.color-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; transition: transform var(--t); flex-shrink: 0;
+}
+.color-opt:hover  { transform: translateY(-2px); }
+.color-opt:active { transform: scale(0.93); }
+.color-circle {
+  width: clamp(38px, 9vw, 50px); height: clamp(38px, 9vw, 50px);
+  border-radius: 50%; border: 3px solid transparent;
+  transition: all var(--t); box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.color-opt.active .color-circle {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.15);
+  transform: scale(1.09);
+}
+.color-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--lite); text-align: center; max-width: 50px; line-height: 1.2;
+}
+.color-opt.active .color-name { color: var(--ink); }
+
+/* ──────────────────────────────────────
+   SCRATCH MODE
+   ────────────────────────────────────── */
+.scratch-ring-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6px; height: 52px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+.scratch-ring-info {
+  flex: 1; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.scratch-ring-name {
+  font-family: 'Anton', sans-serif;
+  font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1;
+}
+.scratch-ring-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--lite);
+}
+
+/* Color picker row — always horizontal scroll */
+.scratch-picker {
+  flex: 1; min-height: 0;
+  display: flex; align-items: center;
+}
+.scratch-picker.prompt-mode {
+  flex-direction: column;
+  justify-content: center; gap: 6px;
+  color: var(--lite); padding: 12px;
+}
+.scratch-picker.color-mode {
+  overflow-x: auto; overflow-y: hidden;
+  padding: 0 14px; gap: 10px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.scratch-picker.color-mode::-webkit-scrollbar { display: none; }
+
+.scratch-prompt-icon { font-size: 1.5rem; opacity: 0.4; line-height: 1; }
+.scratch-prompt-txt {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.74rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+
+/* Scratch color swatch */
+.sc-opt {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 5px; cursor: pointer; flex-shrink: 0;
+  transition: transform var(--t);
+}
+.sc-opt:hover  { transform: translateY(-2px); }
+.sc-opt:active { transform: scale(0.93); }
+.sc-circle {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid transparent; transition: all var(--t);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.sc-opt.active .sc-circle {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.15);
+  transform: scale(1.1);
+}
+.sc-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.55rem; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--lite); text-align: center; max-width: 42px; line-height: 1.2;
+}
+.sc-opt.active .sc-name { color: var(--ink); }
+
+/* Scratch action bar */
+.scratch-actions {
+  display: flex; gap: 7px; padding: 8px 12px 10px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0; justify-content: flex-end; align-items: center;
+}
+
+/* ═══════════════════════════════════════════
+   SCREEN: MYSTERY
+   ═══════════════════════════════════════════ */
+#s-mystery {
+  background: var(--myst-bg); color: #fff;
+  position: relative; overflow: hidden;
+}
+#s-mystery::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 65% 30%, rgba(124,77,255,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 75%, rgba(0,160,255,0.09) 0%, transparent 48%);
+  pointer-events: none;
+}
+.mystery-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; position: relative; z-index: 10;
+}
+.mystery-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 20px 24px 48px;
+  position: relative; z-index: 10; gap: 0;
+}
+.mystery-q  { font-size: 3rem; margin-bottom: 20px; line-height: 1; }
+.mystery-h1 {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(2rem,7vw,4.5rem);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  line-height: 0.92; margin-bottom: 12px;
+}
+.mystery-h1 .acc { color: #9a7fff; }
+.mystery-p {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  max-width: 360px; line-height: 1.6; margin-bottom: 32px;
+}
+.mystery-offer {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 99px; padding: 10px 22px; margin-bottom: 32px;
+}
+.mystery-pill {
+  background: #fff; color: var(--myst-bg);
+  font-family: 'Anton', sans-serif; font-size: 0.85rem; letter-spacing: 0.1em;
+  padding: 4px 12px; border-radius: 99px;
+}
+.mystery-offer-txt {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.mystery-ctas { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.btn.myst-primary {
+  background: #fff; border-color: #fff; color: var(--myst-bg);
+  font-size: 1rem; min-height: 52px; padding: 0 40px;
+  box-shadow: 0 4px 24px rgba(255,255,255,0.12);
+}
+.btn.myst-primary:hover { background: transparent; color: #fff; }
+.myst-skip {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.25); transition: color var(--t); padding: 8px;
+}
+.myst-skip:hover { color: rgba(255,255,255,0.55); }
+
+/* ═══════════════════════════════════════════
+   OVERLAY: SAVE / SHARE
+   ═══════════════════════════════════════════ */
+.ov {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.52); z-index: 300;
+  align-items: flex-end; justify-content: center; padding: 0;
+}
+.ov.open { display: flex; }
+.ov-box {
+  background: var(--bg); border-radius: 18px 18px 0 0;
+  padding: 28px 22px 32px; width: 100%; max-width: 520px;
+  box-shadow: var(--shl);
+  animation: sheetUp 0.28s cubic-bezier(0.32,0.72,0,1) both;
+  max-height: 90vh; overflow-y: auto;
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.ov-handle {
+  width: 36px; height: 4px;
+  background: rgba(0,0,0,0.15); border-radius: 2px;
+  margin: 0 auto 18px;
+}
+.ov-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 1.4rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px;
+}
+.ov-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--lite); margin-bottom: 18px;
+}
+.uniq-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--card); border-radius: 99px;
+  padding: 7px 14px; margin-bottom: 16px; box-shadow: var(--sh);
+}
+.uniq-icon { font-size: 1rem; line-height: 1; }
+.uniq-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink);
+}
+.ov-poles {
+  display: flex; justify-content: center; margin-bottom: 18px;
+  background: var(--card); border-radius: 10px;
+  padding: 14px; box-shadow: var(--sh);
+}
+.ov-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--lite); margin-bottom: 8px;
+}
+.ov-link-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.ov-link {
+  flex: 1; padding: 10px 12px; background: var(--card); border-radius: 7px;
+  font-family: 'Barlow', sans-serif; font-size: 0.72rem; color: var(--mid);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border: 1.5px solid rgba(0,0,0,0.08); box-shadow: var(--sh);
+  cursor: text; user-select: all;
+}
+.copy-confirm {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--green); opacity: 0; text-align: center; margin-top: 6px;
+  transition: opacity var(--t); height: 0; overflow: hidden;
+}
+.copy-confirm.show { opacity: 1; height: auto; }
+.ov-divider {
+  text-align: center; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--lite); margin: 14px 0; position: relative;
+}
+.ov-divider::before, .ov-divider::after {
+  content: ''; position: absolute; top: 50%;
+  width: 40%; height: 1px; background: rgba(0,0,0,0.08);
+}
+.ov-divider::before { left: 0; }
+.ov-divider::after  { right: 0; }
+.ov-email-row { display: flex; gap: 8px; }
+.ov-email-input {
+  flex: 1; padding: 0 14px; height: 44px; border-radius: 6px;
+  border: 2px solid rgba(0,0,0,0.12); background: var(--card);
+  font-family: 'Barlow', sans-serif; font-size: 0.88rem; color: var(--ink);
+  transition: border-color var(--t); outline: none;
+}
+.ov-email-input:focus      { border-color: var(--ink); }
+.ov-email-input::placeholder { color: var(--lite); }
+.email-sent {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--green); opacity: 0; text-align: center; margin-top: 8px;
+  transition: opacity var(--t); height: 0; overflow: hidden;
+}
+.email-sent.show { opacity: 1; height: auto; }
+
+/* ── Misc ── */
+@media (max-width: 380px) {
+  .sc-circle { width: 34px; height: 34px; }
+  .scratch-actions { gap: 5px; padding: 7px 10px 9px; }
+}
+@media (min-width: 740px) {
+  .ov { align-items: center; padding: 20px; }
+  .ov-box { border-radius: 18px; }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fadeIn 0.22s ease both; }
+
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     SCREEN 1: LANDING
-     ══════════════════════════════════════ -->
-<div id="screen-landing" class="screen active">
-  <div class="landing-inner">
-    <div class="landing-eyebrow">The Modular Ring System</div>
-    <div class="landing-wordmark">
-      <span class="wm-brand">
-        <span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span>
-      </span>
-      <span class="wm-product">poles</span>
-    </div>
-    <div class="landing-poles-preview" id="landing-preview"></div>
-    <button class="landing-btn" onclick="goTo('palette')">Design Your Poles →</button>
-  </div>
-  <div class="landing-footer">twIIgs · Modular Ski Pole System</div>
-</div>
 
 <!-- ══════════════════════════════════════
-     SCREEN 2: CHOOSE PALETTE
+     SCREEN: LANDING
      ══════════════════════════════════════ -->
-<div id="screen-palette" class="screen">
-  <nav class="nav-bar">
-    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
-    <div class="nav-steps" id="nav-steps-palette"></div>
-    <div style="width:60px"></div>
+<div id="s-land" class="screen active">
+  <nav class="land-nav">
+    <div class="logo dark"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <div class="land-tagline">Modular Ring System</div>
   </nav>
-  <div class="screen-body">
-    <div class="screen-header">
-      <div class="step-label">Step 1 of 3</div>
-      <div class="step-title">Choose a Palette</div>
-    </div>
-    <div class="palette-grid" id="palette-grid"></div>
-    <div class="bottom-nav">
-      <button class="btn btn-outline" onclick="goTo('landing')">← Back</button>
-      <button class="btn" onclick="goTo('pattern')">Next: Pattern →</button>
-    </div>
-  </div>
-</div>
 
-<!-- ══════════════════════════════════════
-     SCREEN 3: CHOOSE PATTERN
-     ══════════════════════════════════════ -->
-<div id="screen-pattern" class="screen">
-  <nav class="nav-bar">
-    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
-    <div class="nav-steps" id="nav-steps-pattern"></div>
-    <div style="width:60px"></div>
-  </nav>
-  <div class="screen-body">
-    <div class="screen-header">
-      <div class="step-label">Step 2 of 3</div>
-      <div class="step-title">Choose a Pattern</div>
-    </div>
-    <div class="pattern-grid" id="pattern-grid"></div>
-    <div class="bottom-nav">
-      <button class="btn btn-outline" onclick="goTo('palette')">← Back</button>
-      <button class="btn" onclick="goTo('colors')">Next: Colors →</button>
-    </div>
-  </div>
-</div>
+  <div class="land-cards">
 
-<!-- ══════════════════════════════════════
-     SCREEN 4: ASSIGN COLORS
-     ══════════════════════════════════════ -->
-<div id="screen-colors" class="screen">
-  <nav class="nav-bar">
-    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
-    <div class="nav-steps" id="nav-steps-colors"></div>
-    <div style="width:60px"></div>
-  </nav>
-  <!-- Mobile-only: compact poles preview pinned below the nav bar -->
-  <div class="mobile-poles-bar" id="mobile-poles-bar"></div>
-  <div class="screen-body">
-    <div class="screen-header">
-      <div class="step-label">Step 3 of 3</div>
-      <div class="step-title">Assign Your Colors</div>
-    </div>
-    <div class="colors-layout">
-      <div class="slots-panel" id="slots-panel"></div>
-      <!-- Desktop only: poles column sticky beside slots -->
-      <div class="poles-hero">
-        <div class="poles-wrapper" id="poles-live"></div>
+    <div class="land-card land-card-custom" onclick="goTo('looks')">
+      <div class="card-header">
+        <div class="card-price">$110</div>
+        <div class="card-badge">CUSTOM</div>
+      </div>
+      <div class="card-visual" id="land-custom-visual"></div>
+      <div class="card-footer">
+        <div class="card-title">Custom Poles</div>
+        <div class="card-sub">You design every ring</div>
+        <div class="card-cta">Design Yours →</div>
       </div>
     </div>
-    <div class="bottom-nav">
-      <button class="btn btn-outline" onclick="goTo('pattern')">← Back</button>
-      <button class="btn btn-accent" onclick="goTo('finish')">Finish Design →</button>
+
+    <div class="land-card land-card-mystery" onclick="goTo('mystery')">
+      <div class="card-header">
+        <div>
+          <div class="card-price">$90</div>
+          <div class="mystery-save-badge">$10 OFF</div>
+        </div>
+        <div class="card-badge">MYSTERY</div>
+      </div>
+      <div class="card-visual">
+        <div class="qmarks" id="qmarks"></div>
+      </div>
+      <div class="card-footer">
+        <div class="card-title">Mystery Poles</div>
+        <div class="card-sub">We design. You save.</div>
+        <div class="card-cta">I'm In →</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="land-footer">twIIgs · 38-Ring Modular Ski Pole System</div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN: LOOKS  (choose a look)
+     ══════════════════════════════════════ -->
+<div id="s-looks" class="screen">
+  <nav class="nav">
+    <div class="logo"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <button class="btn ghost sm" onclick="goTo('land')">← Back</button>
+  </nav>
+
+  <div class="looks-body fade-in">
+    <div class="looks-hed">Choose a look</div>
+    <div class="looks-sub">Pick one to start from, then make it yours</div>
+
+    <div class="looks-grid" id="looks-grid">
+      <!-- filled by buildLooks() -->
+    </div>
+
+    <div class="scratch-card" onclick="startScratch()">
+      <div class="scratch-card-text">
+        <div class="scratch-card-title">Start from Scratch</div>
+        <div class="scratch-card-sub">Paint every single ring yourself — full control, 19 colors</div>
+      </div>
+      <div class="scratch-card-cta">Blank Canvas →</div>
     </div>
   </div>
 </div>
 
+
 <!-- ══════════════════════════════════════
-     SCREEN 5: FINISH
+     SCREEN: CUSTOMIZER
      ══════════════════════════════════════ -->
-<div id="screen-finish" class="screen">
-  <nav class="nav-bar">
-    <div class="logotype"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
-    <div style="width:60px"></div>
-    <div style="width:60px"></div>
+<div id="s-cust" class="screen">
+  <nav class="nav">
+    <button class="cust-nav-back" onclick="goTo('looks')">← Looks</button>
+    <div class="logo"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <button class="save-btn" onclick="openSave()">💾 Save</button>
   </nav>
-  <div class="screen-body">
-    <div class="congrats-msg">Your Poles<br>Are Ready.</div>
-    <div class="congrats-sub">Here's your custom ring configuration</div>
-    <div class="finish-layout">
-      <div><div class="poles-wrapper" id="poles-final"></div></div>
-      <div>
-        <div class="summary-title">Ring Summary</div>
-        <div id="summary-rows"></div>
-        <div class="finish-actions">
-          <button class="btn btn-outline" onclick="goTo('colors')">← Edit Colors</button>
-          <button class="btn btn-accent" onclick="startOver()">Start Over</button>
+
+  <div class="cust-body">
+
+    <div class="poles-stage" id="poles-stage"></div>
+
+    <div class="controls-panel">
+
+      <!-- PRESET MODE -->
+      <div class="ctrl-mode" id="ctrl-preset">
+        <div class="step-nav">
+          <button class="step-arrow" id="step-prev" onclick="prevStep()">‹</button>
+          <div class="step-center">
+            <div class="step-name"     id="step-name">Palette</div>
+            <div class="step-progress" id="step-prog">1 of 7</div>
+          </div>
+          <button class="step-arrow" id="step-next" onclick="nextStep()">›</button>
+        </div>
+        <div class="step-content" id="step-content"></div>
+        <div class="step-save-bar" id="step-save-bar">
+          <button class="btn green" onclick="openSave()">Save &amp; Share This Design →</button>
         </div>
       </div>
+
+      <!-- SCRATCH MODE -->
+      <div class="ctrl-mode hidden" id="ctrl-scratch">
+        <div class="scratch-ring-nav">
+          <button class="step-arrow" id="scratch-prev" onclick="scratchPrev()" disabled>‹</button>
+          <div class="scratch-ring-info">
+            <div class="scratch-ring-name" id="scratch-ring-name">Select a Ring</div>
+            <div class="scratch-ring-sub"  id="scratch-ring-sub">tap any ring to paint it</div>
+          </div>
+          <button class="step-arrow" id="scratch-next" onclick="scratchNext()" disabled>›</button>
+        </div>
+        <div class="scratch-picker prompt-mode" id="scratch-picker">
+          <div class="scratch-prompt-icon">👆</div>
+          <div class="scratch-prompt-txt">Tap any ring to paint it</div>
+        </div>
+        <div class="scratch-actions">
+          <button class="btn sm ghost" onclick="mirrorScratch()">Mirror P1→P2</button>
+          <button class="btn sm ghost" onclick="resetScratch()">Reset</button>
+          <button class="btn sm green" onclick="openSave()">Save →</button>
+        </div>
+      </div>
+
+    </div><!-- /controls-panel -->
+  </div><!-- /cust-body -->
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN: MYSTERY
+     ══════════════════════════════════════ -->
+<div id="s-mystery" class="screen">
+  <nav class="mystery-nav">
+    <div class="logo dark"><span class="lw">tw</span><span class="li">II</span><span class="lw">gs</span></div>
+    <button class="btn sm"
+      style="background:transparent;border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);"
+      onclick="goTo('land')">← Back</button>
+  </nav>
+  <div class="mystery-body">
+    <div class="mystery-q">🎲</div>
+    <div class="mystery-h1">The Mountain<br><span class="acc">Decides.</span></div>
+    <p class="mystery-p">Skip the designing — we hand-pick an exclusive combination from our archive. Completely unique to your order.</p>
+    <div class="mystery-offer">
+      <span class="mystery-pill">$10 OFF</span>
+      <span class="mystery-offer-txt">For taking the leap</span>
+    </div>
+    <div class="mystery-ctas">
+      <button class="btn myst-primary"
+        onclick="alert('Checkout coming soon! Your mystery poles are on their way.')">
+        Order My Mystery Build — $90 →
+      </button>
+      <button class="myst-skip" onclick="goTo('land')">Actually, let me design mine</button>
     </div>
   </div>
 </div>
 
 
+<!-- ══════════════════════════════════════
+     OVERLAY: SAVE / SHARE
+     ══════════════════════════════════════ -->
+<div class="ov" id="ov-save" onclick="handleOvClick(event)">
+  <div class="ov-box">
+    <div class="ov-handle"></div>
+    <div class="ov-title">Save Your Design</div>
+    <div class="ov-sub">Share it, come back later, or order now</div>
+
+    <div class="uniq-badge">
+      <span class="uniq-icon" id="uniq-icon">✨</span>
+      <span class="uniq-text" id="uniq-text">Loading...</span>
+    </div>
+
+    <div class="ov-poles">
+      <div class="poles-wrap" id="ov-poles"></div>
+    </div>
+
+    <div class="ov-lbl">Share link</div>
+    <div class="ov-link-row">
+      <div class="ov-link" id="ov-link-txt" onclick="copyLink()"></div>
+      <button class="btn sm" onclick="copyLink()">Copy</button>
+    </div>
+    <div class="copy-confirm" id="copy-confirm">Link copied ✓</div>
+
+    <div class="ov-divider">or email it to yourself</div>
+
+    <div class="ov-email-row">
+      <input class="ov-email-input" type="email" id="ov-email"
+             placeholder="your@email.com" autocomplete="email">
+      <button class="btn sm green" onclick="sendEmail()">Send</button>
+    </div>
+    <div class="email-sent" id="email-sent">Check your email app ✓</div>
+
+    <div style="margin-top:18px;">
+      <button class="btn ghost" style="width:100%;" onclick="closeOv('ov-save')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCRIPT
+     ══════════════════════════════════════ -->
 <script>
-/* ══════════════════════════════════════════════
-   STATE
-   ══════════════════════════════════════════════ */
-const state = {
-  selectedPalette: 0,
-  selectedPattern: 0,
-  // slotColors[i] = which palette color index (0–5) is assigned to slot i
-  slotColors: [0, 1, 2, 3, 4, 5]
+'use strict';
+
+/* ────────────────────────────────────────────────────
+   DATA  —  edit these constants to change the product
+   ──────────────────────────────────────────────────── */
+
+const BIG   = new Set([0, 10, 19, 28, 34]);
+const isBig = i => BIG.has(i);
+
+const COLOR_STEP_NAMES = [
+  'Main Color', 'Secondary Color', 'Third Color', 'Accent', 'Accent 2', 'Detail'
+];
+
+const DESCRIPTORS = [
+  { icon:'🏔️', text:'First Ascent Design'       },
+  { icon:'🔥', text:'Certified Banger'            },
+  { icon:'👑', text:'Mountain Legend Status'       },
+  { icon:'💎', text:'Hidden Gem Combo'             },
+  { icon:'🤙', text:'Steeze Level: Expert'         },
+  { icon:'🐐', text:'Full Goat Configuration'      },
+  { icon:'❄️', text:'Off-Piste Exclusive'          },
+  { icon:'🏆', text:'Podium Finish Vibes'          },
+  { icon:'✨', text:'Rare Drop'                    },
+  { icon:'🎿', text:'The Locals Only Pick'         },
+  { icon:'🌋', text:'Dangerous Levels of Style'    },
+  { icon:'🦅', text:'Summit Approved'              }
+];
+
+/* ── PALETTES: 3 × 6 colors ──
+   short = display name in palette picker
+   colors = 6 hex values (C1 through C6)  */
+const PALETTES = [
+  { name:'Powder Day Breakdown', short:'Powder',
+    colors:['#9ecafb','#822b40','#b1c3ea','#eafef3','#f3f3a3','#000000'] },
+  { name:'Après Ski Therapy',    short:'Après',
+    colors:['#c0d9fb','#f0d1a5','#4e546a','#6c3340','#ffd2e8','#000000'] },
+  { name:'Lost On A Blue Run',   short:'Blue Run',
+    colors:['#ff944a','#fce763','#f63338','#c984ca','#6a9184','#000000'] }
+];
+
+/* ── Color slot names per palette ── */
+const COLOR_NAMES = [
+  ['Sky','Burgundy','Periwinkle','Mint','Straw','Jet'],
+  ['Powder','Peach','Slate','Wine','Blush','Jet'],
+  ['Tangerine','Lemon','Flame','Orchid','Sage','Jet']
+];
+
+/* ── PATTERNS: silently used by presets, not user-selectable ──
+   38 values per pole array. Each value = color slot index (0–5). */
+const PATTERNS = [
+  { name:'Rhythm',
+    pole1:[0,1,0,2,3,4,1,0,2,3, 0,1,0,2,3,1,0,2,3, 0,1,0,2,3,1,0,2,3, 0,1,0,2,3,1, 0,0,3,4],
+    pole2:[0,3,2,0,1,4,3,2,0,1, 0,3,2,0,1,3,2,0,1, 0,3,2,0,1,3,2,0,1, 0,3,2,0,1,3, 0,1,2,4] },
+  { name:'Signal',
+    pole1:[0,1,1,2,3,4,0,4,1,1, 1,1,1,2,4,0,4,1,1, 1,1,1,4,3,4,1,1,1, 1,1,1,4,1,1, 0,1,4,3],
+    pole2:[0,1,1,2,4,3,0,3,1,1, 1,1,1,2,3,0,3,1,1, 1,1,1,3,4,3,1,1,1, 1,1,1,3,1,1, 0,1,3,4] },
+  { name:'Accent',
+    pole1:[1,0,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0, 1,0,2,0],
+    pole2:[2,0,0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0,0, 2,0,0,0,0,0, 2,0,1,0] }
+];
+PATTERNS.forEach(p => ['pole1','pole2'].forEach(k => {
+  while (p[k].length < 38) p[k].push(0);
+  p[k] = p[k].slice(0, 38);
+}));
+
+/* ── ALL COLORS available in scratch mode ── */
+const ALL_COLORS = [
+  { hex:'#9ecafb', name:'Sky'       },
+  { hex:'#c0d9fb', name:'Powder'    },
+  { hex:'#b1c3ea', name:'Periwinkle'},
+  { hex:'#4e546a', name:'Slate'     },
+  { hex:'#6a9184', name:'Sage'      },
+  { hex:'#3D6B4A', name:'Forest'    },
+  { hex:'#eafef3', name:'Mint'      },
+  { hex:'#f3f3a3', name:'Straw'     },
+  { hex:'#fce763', name:'Lemon'     },
+  { hex:'#f0d1a5', name:'Peach'     },
+  { hex:'#ffd2e8', name:'Blush'     },
+  { hex:'#ff944a', name:'Tangerine' },
+  { hex:'#c984ca', name:'Orchid'    },
+  { hex:'#f63338', name:'Flame'     },
+  { hex:'#822b40', name:'Burgundy'  },
+  { hex:'#6c3340', name:'Wine'      },
+  { hex:'#000000', name:'Jet'       },
+  { hex:'#F5F0E8', name:'Cream'     },
+  { hex:'#ffffff', name:'Snow'      }
+];
+
+/* ── PRESETS: 6 curated looks ──
+   palette: 0–2  |  pattern: 0–2
+   slotColors: [C1,C2,C3,C4,C5,C6] — each value = index into palette.colors */
+const PRESETS = [
+  { name:'First Chair',       palette:0, pattern:0, slotColors:[0,1,2,3,4,5] },
+  { name:'Full Send',         palette:2, pattern:1, slotColors:[2,0,1,3,4,5] },
+  { name:'Après Everything',  palette:1, pattern:0, slotColors:[2,0,3,1,4,5] },
+  { name:'Blacked Out',       palette:0, pattern:2, slotColors:[5,0,1,3,4,2] },
+  { name:'Smoke Signal',      palette:1, pattern:1, slotColors:[2,0,3,1,4,5] },
+  { name:'Sunburn',           palette:2, pattern:2, slotColors:[0,1,2,5,4,3] }
+];
+
+/* ── Fixed sizes for thumbnails & overlay ── */
+const SIZES = {
+  land: { sw:22, bw:35, h:6,   gap:1.1, shw:7,  shh:38 },
+  tiny: { sw:11, bw:18, h:3.5, gap:0.8, shw:4,  shh:20 },
+  ov:   { sw:16, bw:26, h:5,   gap:1.0, shw:6,  shh:30 }
 };
 
-/* ══════════════════════════════════════════════
-   RING SIZE LAYOUT
-   Big ring positions are 0-indexed: 0, 10, 19, 28, 34
-   (These map to P1, P11, P20, P29, P35 in 1-indexed terms)
-   ══════════════════════════════════════════════ */
-const BIG_POSITIONS = new Set([0, 10, 19, 28, 34]);
-function isBig(pos) { return BIG_POSITIONS.has(pos); }
 
-/* ══════════════════════════════════════════════
-   // === PALETTE COLORS — EDIT HERE ===
-   Each palette has exactly 6 colors (C1–C6).
-   Replace any hex code to change a color.
-   ══════════════════════════════════════════════ */
-const PALETTES = [
-  {
-    name: "Powder Day Breakdown",
-    colors: ["#9ecafb", "#822b40", "#b1c3ea", "#eafef3", "#f3f3a3", "#000000"]
-    //        C1-sky     C2-burg    C3-periw   C4-mint    C5-straw   C6-jet
+/* ────────────────────────────────────────────────────
+   STATE
+   ──────────────────────────────────────────────────── */
+const S = {
+  mode:            'preset', // 'preset' | 'scratch'
+  // Preset mode
+  palette:         0,
+  pattern:         0,
+  slotColors:      [0,1,2,3,4,5],
+  manualSlots:     new Set(),
+  currentStep:     0,
+  // Scratch mode: per-ring hex per pole
+  scratchColors:   {
+    pole1: new Array(38).fill('#000000'),
+    pole2: new Array(38).fill('#000000')
   },
-  {
-    name: "Après Ski Therapy",
-    colors: ["#c0d9fb", "#f0d1a5", "#4e546a", "#6c3340", "#ffd2e8", "#000000"]
-    //        C1-powder  C2-peach   C3-slate   C4-wine    C5-blush   C6-jet
-  },
-  {
-    name: "Lost On A Blue Run",
-    colors: ["#ff944a", "#fce763", "#f63338", "#c984ca", "#6a9184", "#000000"]
-    //        C1-tang    C2-lemon   C3-flame   C4-orchid  C5-sage    C6-jet
+  // Which ring is currently selected in scratch mode
+  // { poleKey:'pole1'|'pole2', index:0-37 } or null
+  scratchSel:      null,
+  pulsed:          false
+};
+
+
+/* ────────────────────────────────────────────────────
+   HELPERS
+   ──────────────────────────────────────────────────── */
+
+function getHex(si) {
+  const ci = S.slotColors[si] ?? si;
+  return PALETTES[S.palette].colors[ci] ?? '#ccc';
+}
+
+// Returns color slot indices sorted by weighted ring usage (big rings count 3×)
+function weightedOrder(patIdx) {
+  const pat = PATTERNS[patIdx];
+  const w   = {};
+  [pat.pole1, pat.pole2].forEach(arr =>
+    arr.forEach((si, i) => { w[si] = (w[si]||0) + (isBig(i) ? 3 : 1); })
+  );
+  return Object.entries(w).sort((a,b) => b[1]-a[1]).map(([si]) => +si);
+}
+
+// Preset step list: Palette → colors in weighted order
+function buildPresetSteps() {
+  return [
+    { type:'palette', label:'Palette' },
+    ...weightedOrder(S.pattern).map((si, i) => ({
+      type:'color', si, label: COLOR_STEP_NAMES[i] || `Color ${i+1}`
+    }))
+  ];
+}
+
+function designDescriptor() {
+  const key  = `${S.palette}-${S.pattern}-${S.slotColors.join(',')}`;
+  const seen = JSON.parse(localStorage.getItem('twiigs_seen')||'[]');
+  if (!seen.includes(key)) {
+    try { localStorage.setItem('twiigs_seen', JSON.stringify([...seen, key].slice(-120))); } catch(e){}
+    return { icon:'⭐', text:'First to design this!' };
   }
-];
+  let h = 0;
+  for (const c of key) h = ((h<<5)-h+c.charCodeAt(0))|0;
+  return DESCRIPTORS[Math.abs(h) % DESCRIPTORS.length];
+}
 
-/* ══════════════════════════════════════════════
-   COLOR NAMES — used in the finish summary
-   6 names per palette, matching the color order above
-   ══════════════════════════════════════════════ */
-const COLOR_NAMES = [
-  ["Sky", "Burgundy", "Periwinkle", "Mint", "Straw", "Jet"],
-  ["Powder", "Peach", "Slate", "Wine", "Blush", "Jet"],
-  ["Tangerine", "Lemon", "Flame", "Orchid", "Sage", "Jet"]
-];
+// Label for scratch ring: "P1 Ring 3" / "P1 Big Ring" etc.
+function scratchRingLabel(poleKey, index) {
+  const pole = poleKey === 'pole1' ? 'Pole 1' : 'Pole 2';
+  const kind = isBig(index) ? 'Big Ring' : `Ring ${index + 1}`;
+  return { name: `${pole} — ${kind}`, sub: `${index + 1} of 38` };
+}
 
-/* ══════════════════════════════════════════════
-   // === PATTERNS — EDIT HERE ===
-   38 values per pole. Each value is a slot index:
-     0 = Color 1 (C1), 1 = C2, 2 = C3, 3 = C4, 4 = C5, 5 = C6
-   Array index = ring position - 1  (so index 0 = P1, index 37 = P38)
-   Big ring positions (1-indexed): P1, P11, P20, P29, P35
-   ══════════════════════════════════════════════ */
-const PATTERNS = [
-  {
-    name: "Rhythm",
-    // Slot values: 0=C1, 1=C2, 2=C3, 3=C4, 4=C5 — big rings at P1,P11,P20,P29,P35
-    pole1: [
-    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
-       0,   1,   0,   2,   3,   4,   1,   0,   2,   3,
-    // P11  P12  P13  P14  P15  P16  P17  P18  P19
-       0,   1,   0,   2,   3,   1,   0,   2,   3,
-    // P20  P21  P22  P23  P24  P25  P26  P27  P28
-       0,   1,   0,   2,   3,   1,   0,   2,   3,
-    // P29  P30  P31  P32  P33  P34
-       0,   1,   0,   2,   3,   1,
-    // P35  P36  P37  P38
-       0,   0,   3,   4
-    ],
-    pole2: [
-    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
-       0,   3,   2,   0,   1,   4,   3,   2,   0,   1,
-    // P11  P12  P13  P14  P15  P16  P17  P18  P19
-       0,   3,   2,   0,   1,   3,   2,   0,   1,
-    // P20  P21  P22  P23  P24  P25  P26  P27  P28
-       0,   3,   2,   0,   1,   3,   2,   0,   1,
-    // P29  P30  P31  P32  P33  P34
-       0,   3,   2,   0,   1,   3,
-    // P35  P36  P37  P38
-       0,   1,   2,   4
-    ]
-  },
-  {
-    name: "Signal",
-    // C2-heavy with C1/C5 flash accents
-    pole1: [
-    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
-       0,   1,   1,   2,   3,   4,   0,   4,   1,   1,
-    // P11  P12  P13  P14  P15  P16  P17  P18  P19
-       1,   1,   1,   2,   4,   0,   4,   1,   1,
-    // P20  P21  P22  P23  P24  P25  P26  P27  P28
-       1,   1,   1,   4,   3,   4,   1,   1,   1,
-    // P29  P30  P31  P32  P33  P34
-       1,   1,   1,   4,   1,   1,
-    // P35  P36  P37  P38
-       0,   1,   4,   3
-    ],
-    pole2: [
-    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
-       0,   1,   1,   2,   4,   3,   0,   3,   1,   1,
-    // P11  P12  P13  P14  P15  P16  P17  P18  P19
-       1,   1,   1,   2,   3,   0,   3,   1,   1,
-    // P20  P21  P22  P23  P24  P25  P26  P27  P28
-       1,   1,   1,   3,   4,   3,   1,   1,   1,
-    // P29  P30  P31  P32  P33  P34
-       1,   1,   1,   3,   1,   1,
-    // P35  P36  P37  P38
-       0,   1,   3,   4
-    ]
-  },
-  {
-    name: "Accent",
-    // C1 body; C2 marks big rings on pole 1, C3 marks big rings on pole 2
-    pole1: [
-    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
-       1,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-    // P11  P12  P13  P14  P15  P16  P17  P18  P19
-       1,   0,   0,   0,   0,   0,   0,   0,   0,
-    // P20  P21  P22  P23  P24  P25  P26  P27  P28
-       1,   0,   0,   0,   0,   0,   0,   0,   0,
-    // P29  P30  P31  P32  P33  P34
-       1,   0,   0,   0,   0,   0,
-    // P35  P36  P37  P38
-       1,   0,   2,   0
-    ],
-    pole2: [
-    // P1   P2   P3   P4   P5   P6   P7   P8   P9   P10
-       2,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-    // P11  P12  P13  P14  P15  P16  P17  P18  P19
-       2,   0,   0,   0,   0,   0,   0,   0,   0,
-    // P20  P21  P22  P23  P24  P25  P26  P27  P28
-       2,   0,   0,   0,   0,   0,   0,   0,   0,
-    // P29  P30  P31  P32  P33  P34
-       2,   0,   0,   0,   0,   0,
-    // P35  P36  P37  P38
-       2,   0,   1,   0
-    ]
+// Flat scratch navigation index  0..75  (rings 0-37 = pole1, 38-75 = pole2)
+function scratchSelToFlat() {
+  if (!S.scratchSel) return -1;
+  return S.scratchSel.poleKey === 'pole1'
+    ? S.scratchSel.index
+    : 38 + S.scratchSel.index;
+}
+function scratchFlatToSel(flat) {
+  if (flat < 38) return { poleKey:'pole1', index: flat };
+  return { poleKey:'pole2', index: flat - 38 };
+}
+
+
+/* ────────────────────────────────────────────────────
+   DYNAMIC POLE SIZING
+   Calculates ring dimensions to fill the poles-stage.
+   ──────────────────────────────────────────────────── */
+function getDynamicSize() {
+  const stage = document.getElementById('poles-stage');
+  if (!stage) return { sw:20, bw:32, h:6, gap:1.2, shw:7, shh:30 };
+
+  const stW  = stage.clientWidth;
+  const stH  = stage.clientHeight;
+  const gap  = 1.2;  // gap between rings, px
+
+  // We want all 38 rings + shaft to fill ~87% of the stage height.
+  // Total height = 38*(h+gap) + shaftH, where shaftH ≈ 4.5*h
+  // → h*(38+4.5) = targetH - 38*gap
+  const targetH = stH * 0.87;
+  let h = (targetH - 38 * gap) / 42.5;
+  h = Math.max(3.5, Math.min(14, h));
+
+  let sw  = Math.round(h * 2.9);
+  let bw  = Math.round(sw * 1.61);
+  let shh = Math.round(h * 4.5);
+  let shw = Math.max(4, Math.round(sw * 0.36));
+
+  // Horizontal check: two poles + gap must fit
+  const poleGap = Math.min(40, stW * 0.1);
+  const needed  = 2 * bw + poleGap + 32;  // 32px for labels + padding
+  if (needed > stW * 0.94) {
+    const scale = (stW * 0.94 - poleGap - 32) / (2 * bw);
+    h   = Math.max(3, h * scale);
+    sw  = Math.max(4, Math.round(sw * scale));
+    bw  = Math.max(6, Math.round(bw * scale));
+    shh = Math.max(10, Math.round(shh * scale));
+    shw = Math.max(3,  Math.round(shw * scale));
   }
-];
 
-/* Safety: ensure all patterns are exactly 38 rings */
-PATTERNS.forEach(p => {
-  while (p.pole1.length < 38) p.pole1.push(0);
-  while (p.pole2.length < 38) p.pole2.push(0);
-  p.pole1 = p.pole1.slice(0, 38);
-  p.pole2 = p.pole2.slice(0, 38);
-});
-
-/* ══════════════════════════════════════════════
-   NAVIGATION
-   ══════════════════════════════════════════════ */
-const ALL_SCREENS = ['landing','palette','pattern','colors','finish'];
-const STEP_SCREENS = ['palette','pattern','colors'];
-
-function goTo(screenId) {
-  ALL_SCREENS.forEach(id => {
-    const el = document.getElementById('screen-' + id);
-    if (el) el.classList.toggle('active', id === screenId);
-  });
-  window.scrollTo(0, 0);
-  if (screenId === 'palette') buildPaletteScreen();
-  if (screenId === 'pattern') buildPatternScreen();
-  if (screenId === 'colors')  buildColorsScreen();
-  if (screenId === 'finish')  buildFinishScreen();
+  return { sw, bw, h: Math.round(h * 10) / 10, gap, shw, shh };
 }
 
-function startOver() {
-  state.selectedPalette = 0;
-  state.selectedPattern = 0;
-  state.slotColors = [0,1,2,3,4,5];
-  goTo('landing');
-}
 
-/* ══════════════════════════════════════════════
-   NAV DOTS
-   ══════════════════════════════════════════════ */
-function renderNavDots(containerId, currentStep) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = STEP_SCREENS.map((s, i) => {
-    let cls = 'nav-dot';
-    if (i < currentStep) cls += ' done';
-    if (i === currentStep) cls += ' active';
-    return `<div class="${cls}"></div>`;
-  }).join('');
-}
-
-/* ══════════════════════════════════════════════
+/* ────────────────────────────────────────────────────
    POLE RENDERING
-   size: 'landing' | 'mini' | 'normal' | 'large'
-   ══════════════════════════════════════════════ */
-function getColor(slotIndex) {
-  const pal = PALETTES[state.selectedPalette].colors;
-  const colorIdx = state.slotColors[slotIndex] ?? 0;
-  return pal[colorIdx] ?? '#ccc';
-}
+   ──────────────────────────────────────────────────── */
 
-function renderPoleHTML(poleArray, size) {
-  // smallW = width of small rings; bigW = 1.6× small
-  // shaftW = shaft width (should be ≤ smallW); shaftH = visible shaft length
-  const S = {
-    landing: { smallW: 28, bigW: 45,  h: 9,  gap: 1.5, shaftW: 10, shaftH: 72 },
-    mini:    { smallW: 16, bigW: 26,  h: 5,  gap: 1.0, shaftW: 6,  shaftH: 44 },
-    normal:  { smallW: 36, bigW: 58,  h: 11, gap: 1.8, shaftW: 12, shaftH: 64 },
-    large:   { smallW: 42, bigW: 67,  h: 12, gap: 2.0, shaftW: 14, shaftH: 78 }
-  }[size] || { smallW: 36, bigW: 58, h: 11, gap: 1.8, shaftW: 12, shaftH: 64 };
-
+// Single pole HTML — preset mode (slot-index → palette color)
+function polePreset(arr, D, tappable) {
   let rings = '';
-  poleArray.forEach((slotIdx, i) => {
-    const color = getColor(slotIdx);
-    const w = isBig(i) ? S.bigW : S.smallW;
-    rings += `<div class="ring" style="
-      width:${w}px;
-      height:${S.h}px;
-      background-color:${color};
-      margin-bottom:${S.gap}px;
-      box-shadow:0 1px 3px rgba(0,0,0,0.22),inset 0 1px 0 rgba(255,255,255,0.14);
-    "></div>`;
+  arr.forEach((si, i) => {
+    const w = isBig(i) ? D.bw : D.sw;
+    rings += `<div class="ring${tappable?' tap':''}"
+      style="width:${w}px;height:${D.h}px;background:${getHex(si)};
+      margin-bottom:${D.gap}px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.13);"
+      ${tappable ? `onclick="presetTapRing(${si})"` : ''}></div>`;
   });
+  return `<div class="pole-body">
+    <div class="pole-rings">${rings}</div>
+    <div class="pole-shaft" style="width:${D.shw}px;height:${D.shh}px;"></div>
+  </div>`;
+}
 
+// Single pole HTML — scratch mode (per-ring hex)
+function poleScratch(hexArr, D, poleKey) {
+  let rings = '';
+  hexArr.forEach((hex, i) => {
+    const w   = isBig(i) ? D.bw : D.sw;
+    const sel = S.scratchSel
+      && S.scratchSel.poleKey === poleKey
+      && S.scratchSel.index  === i;
+    rings += `<div class="ring tap${sel?' sel':''}"
+      style="width:${w}px;height:${D.h}px;background:${hex};
+      margin-bottom:${D.gap}px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.13);"
+      onclick="scratchTapRing('${poleKey}',${i})"></div>`;
+  });
+  return `<div class="pole-body">
+    <div class="pole-rings">${rings}</div>
+    <div class="pole-shaft" style="width:${D.shw}px;height:${D.shh}px;"></div>
+  </div>`;
+}
+
+// Both poles in the live customizer stage
+function custBothPoles() {
+  const D   = getDynamicSize();
+  const pat = PATTERNS[S.pattern];
+  if (S.mode === 'scratch') {
+    return `
+      <div class="pole-col">
+        <div class="pole-lbl">Pole 1</div>
+        ${poleScratch(S.scratchColors.pole1, D, 'pole1')}
+      </div>
+      <div class="pole-col">
+        <div class="pole-lbl">Pole 2</div>
+        ${poleScratch(S.scratchColors.pole2, D, 'pole2')}
+      </div>`;
+  }
   return `
-    <div class="pole-body">
-      <div class="pole-rings">${rings}</div>
-      <div class="pole-shaft" style="width:${S.shaftW}px;height:${S.shaftH}px;"></div>
-    </div>
-  `;
-}
-
-/* ══════════════════════════════════════════════
-   LANDING PREVIEW
-   ══════════════════════════════════════════════ */
-function buildLandingPreview() {
-  const el = document.getElementById('landing-preview');
-  if (!el) return;
-  // Temporarily use palette 0 + default slots for the preview
-  const origPal = state.selectedPalette;
-  const origSlots = [...state.slotColors];
-  state.selectedPalette = 0;
-  state.slotColors = [0,1,2,3,4,5];
-  const p = PATTERNS[0];
-  el.innerHTML = `
-    <div class="pole-col">${renderPoleHTML(p.pole1, 'landing')}</div>
-    <div class="pole-col">${renderPoleHTML(p.pole2, 'landing')}</div>
-  `;
-  state.selectedPalette = origPal;
-  state.slotColors = origSlots;
-}
-
-/* ══════════════════════════════════════════════
-   SCREEN 2: PALETTE
-   ══════════════════════════════════════════════ */
-function buildPaletteScreen() {
-  renderNavDots('nav-steps-palette', 0);
-  document.getElementById('palette-grid').innerHTML = PALETTES.map((pal, i) => `
-    <div class="palette-card ${state.selectedPalette === i ? 'selected' : ''}"
-         onclick="selectPalette(${i})">
-      <div class="palette-name">${pal.name}</div>
-      <div class="palette-swatches">
-        ${pal.colors.map(c => `<div class="swatch" style="background:${c}" title="${c}"></div>`).join('')}
-      </div>
-      <div class="palette-selected-mark">✓ Selected</div>
-    </div>
-  `).join('');
-}
-
-function selectPalette(idx) {
-  state.selectedPalette = idx;
-  state.slotColors = [0,1,2,3,4,5]; // reset when palette changes
-  buildPaletteScreen();
-}
-
-/* ══════════════════════════════════════════════
-   SCREEN 3: PATTERN
-   ══════════════════════════════════════════════ */
-function buildPatternScreen() {
-  renderNavDots('nav-steps-pattern', 1);
-  document.getElementById('pattern-grid').innerHTML = PATTERNS.map((pat, i) => `
-    <div class="pattern-card ${state.selectedPattern === i ? 'selected' : ''}"
-         onclick="selectPattern(${i})">
-      <div class="pattern-name">${pat.name}</div>
-      <div class="mini-poles-wrap">
-        <div class="pole-col">${renderPoleHTML(pat.pole1, 'mini')}</div>
-        <div class="pole-col">${renderPoleHTML(pat.pole2, 'mini')}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function selectPattern(idx) {
-  state.selectedPattern = idx;
-  buildPatternScreen();
-}
-
-/* ══════════════════════════════════════════════
-   SCREEN 4: COLOR ASSIGNMENT
-   ══════════════════════════════════════════════ */
-function buildColorsScreen() {
-  renderNavDots('nav-steps-colors', 2);
-  const pal = PALETTES[state.selectedPalette];
-  const pat = PATTERNS[state.selectedPattern];
-
-  // Figure out how many distinct slots this pattern actually uses
-  const usedSlots = new Set([...pat.pole1, ...pat.pole2]);
-  const numSlots = Math.max(...usedSlots) + 1;
-
-  document.getElementById('slots-panel').innerHTML = `
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;
-                letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-light);
-                margin-bottom:2px;">
-      Tap a swatch to assign each color
-    </div>
-    ${Array.from({ length: numSlots }, (_, slotIdx) => {
-      const currentColorIdx = state.slotColors[slotIdx] ?? slotIdx;
-      return `
-        <div class="slot-row">
-          <div class="slot-row-header">
-            <div class="slot-indicator" style="background:${pal.colors[currentColorIdx]}"></div>
-            <div class="slot-name">Color ${slotIdx + 1}</div>
-          </div>
-          <div class="slot-swatches">
-            ${pal.colors.map((c, ci) => `
-              <div class="slot-swatch ${state.slotColors[slotIdx] === ci ? 'active' : ''}"
-                   style="background:${c}"
-                   onclick="assignSlotColor(${slotIdx}, ${ci})"
-                   title="${c}"></div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }).join('')}
-  `;
-
-  updateLivePoles();
-}
-
-function assignSlotColor(slotIdx, colorIdx) {
-  state.slotColors[slotIdx] = colorIdx;
-  buildColorsScreen();
-}
-
-function updateLivePoles() {
-  const pat = PATTERNS[state.selectedPattern];
-
-  // Desktop poles column
-  const container = document.getElementById('poles-live');
-  if (container) {
-    container.innerHTML = `
-      <div class="pole-col">
-        <div class="pole-label">Pole 1</div>
-        ${renderPoleHTML(pat.pole1, 'normal')}
-      </div>
-      <div class="pole-col">
-        <div class="pole-label">Pole 2</div>
-        ${renderPoleHTML(pat.pole2, 'normal')}
-      </div>
-    `;
-  }
-
-  // Mobile sticky bar — uses 'mini' size so it fits in the compact strip
-  const mobileBar = document.getElementById('mobile-poles-bar');
-  if (mobileBar) {
-    mobileBar.innerHTML = `
-      <div class="pole-col">${renderPoleHTML(pat.pole1, 'mini')}</div>
-      <div class="pole-col">${renderPoleHTML(pat.pole2, 'mini')}</div>
-    `;
-  }
-}
-
-/* ══════════════════════════════════════════════
-   SCREEN 5: FINISH
-   ══════════════════════════════════════════════ */
-function buildFinishScreen() {
-  const pat = PATTERNS[state.selectedPattern];
-  const pal = PALETTES[state.selectedPalette];
-  const names = COLOR_NAMES[state.selectedPalette];
-
-  // Render final poles
-  document.getElementById('poles-final').innerHTML = `
     <div class="pole-col">
-      <div class="pole-label">Pole 1</div>
-      ${renderPoleHTML(pat.pole1, 'large')}
+      <div class="pole-lbl">Pole 1</div>
+      ${polePreset(pat.pole1, D, true)}
     </div>
     <div class="pole-col">
-      <div class="pole-label">Pole 2</div>
-      ${renderPoleHTML(pat.pole2, 'large')}
-    </div>
-  `;
+      <div class="pole-lbl">Pole 2</div>
+      ${polePreset(pat.pole2, D, true)}
+    </div>`;
+}
 
-  // Tally rings per resolved color
-  const colorMap = {};
-  function tally(arr) {
-    arr.forEach((slotIdx, pos) => {
-      const colorIdx = state.slotColors[slotIdx] ?? slotIdx;
-      const hex = pal.colors[colorIdx];
-      if (!colorMap[hex]) colorMap[hex] = { name: names[colorIdx], small: 0, big: 0 };
-      if (isBig(pos)) colorMap[hex].big++;
-      else colorMap[hex].small++;
+// Both poles — static preview using explicit state (for thumbnails)
+function bothPolesTemp(pal, pat, sc, sizeKey, labels) {
+  const D    = SIZES[sizeKey] || SIZES.tiny;
+  const p    = PATTERNS[pat];
+  const hexT = si => PALETTES[pal].colors[sc[si] ?? si] ?? '#ccc';
+  const poleT = arr => {
+    let r = '';
+    arr.forEach((si, i) => {
+      const w = isBig(i) ? D.bw : D.sw;
+      r += `<div class="ring" style="width:${w}px;height:${D.h}px;background:${hexT(si)};
+        margin-bottom:${D.gap}px;
+        box-shadow:0 1px 3px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.13);"></div>`;
     });
-  }
-  tally(pat.pole1);
-  tally(pat.pole2);
-
-  document.getElementById('summary-rows').innerHTML =
-    Object.entries(colorMap).map(([hex, d]) => `
-      <div class="summary-row">
-        <div class="summary-swatch" style="background:${hex}"></div>
-        <div class="summary-color-name">${d.name}</div>
-        <div class="summary-counts">${d.small} small · ${d.big} big</div>
-      </div>
-    `).join('');
+    return `<div class="pole-body">
+      <div class="pole-rings">${r}</div>
+      <div class="pole-shaft" style="width:${D.shw}px;height:${D.shh}px;"></div>
+    </div>`;
+  };
+  return `
+    <div class="pole-col">${labels?'<div class="pole-lbl">Pole 1</div>':''}${poleT(p.pole1)}</div>
+    <div class="pole-col">${labels?'<div class="pole-lbl">Pole 2</div>':''}${poleT(p.pole2)}</div>`;
 }
 
-/* ══════════════════════════════════════════════
+// Both poles for the save overlay (fixed ov size, reflects current live state)
+function bothPolesOverlay() {
+  const D = SIZES.ov;
+  if (S.mode === 'scratch') {
+    const poleOv = hexArr => {
+      let r = '';
+      hexArr.forEach((hex, i) => {
+        const w = isBig(i) ? D.bw : D.sw;
+        r += `<div class="ring" style="width:${w}px;height:${D.h}px;background:${hex};
+          margin-bottom:${D.gap}px;
+          box-shadow:0 1px 3px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.13);"></div>`;
+      });
+      return `<div class="pole-body">
+        <div class="pole-rings">${r}</div>
+        <div class="pole-shaft" style="width:${D.shw}px;height:${D.shh}px;"></div>
+      </div>`;
+    };
+    return `
+      <div class="pole-col"><div class="pole-lbl">Pole 1</div>${poleOv(S.scratchColors.pole1)}</div>
+      <div class="pole-col"><div class="pole-lbl">Pole 2</div>${poleOv(S.scratchColors.pole2)}</div>`;
+  }
+  return bothPolesTemp(S.palette, S.pattern, S.slotColors, 'ov', true);
+}
+
+function refreshPoles() {
+  const el = document.getElementById('poles-stage');
+  if (!el) return;
+  el.innerHTML = `<div class="poles-wrap">${custBothPoles()}</div>`;
+}
+
+
+/* ────────────────────────────────────────────────────
+   NAVIGATION
+   ──────────────────────────────────────────────────── */
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'land')  buildLanding();
+  if (id === 'looks') buildLooks();
+  if (id === 'cust')  buildCustomizer();
+}
+
+
+/* ────────────────────────────────────────────────────
+   SCREEN: LANDING
+   ──────────────────────────────────────────────────── */
+function buildLanding() {
+  // Pole preview on the custom card — built once
+  const vis = document.getElementById('land-custom-visual');
+  if (vis && !vis.dataset.built) {
+    vis.dataset.built = '1';
+    vis.innerHTML = `<div class="poles-wrap" style="gap:clamp(12px,4vw,28px);">
+      ${bothPolesTemp(0, 0, [0,1,2,3,4,5], 'land', false)}
+    </div>`;
+  }
+  // Floating question marks — built once
+  const qm = document.getElementById('qmarks');
+  if (qm && !qm.dataset.built) {
+    qm.dataset.built = '1';
+    const items = [
+      {cls:'qm-big',x:15,y:10,rot:-15,dur:7,  del:0,  opa:0.06},
+      {cls:'qm-big',x:62,y:5, rot:12, dur:8,  del:1.5,opa:0.05},
+      {cls:'qm-mid',x:35,y:40,rot:-8, dur:6,  del:0.8,opa:0.09},
+      {cls:'qm-mid',x:75,y:35,rot:20, dur:9,  del:2,  opa:0.07},
+      {cls:'qm-mid',x:8, y:60,rot:5,  dur:7.5,del:3,  opa:0.08},
+      {cls:'qm-sm', x:50,y:70,rot:-20,dur:5,  del:1,  opa:0.12},
+      {cls:'qm-sm', x:88,y:55,rot:10, dur:6.5,del:2.5,opa:0.1 },
+      {cls:'qm-sm', x:22,y:80,rot:-5, dur:8,  del:0.5,opa:0.08},
+      {cls:'qm-mid',x:60,y:80,rot:15, dur:7,  del:4,  opa:0.06}
+    ];
+    qm.innerHTML = items.map(d =>
+      `<span class="qm ${d.cls}"
+        style="left:${d.x}%;top:${d.y}%;--rot:${d.rot}deg;--dur:${d.dur}s;--del:${d.del}s;--opa:${d.opa};">?</span>`
+    ).join('');
+  }
+}
+
+
+/* ────────────────────────────────────────────────────
+   SCREEN: LOOKS
+   ──────────────────────────────────────────────────── */
+function buildLooks() {
+  document.getElementById('looks-grid').innerHTML = PRESETS.map((p, i) => `
+    <div class="look-card" onclick="loadPreset(${i})">
+      <div class="poles-wrap" style="gap:8px;">
+        ${bothPolesTemp(p.palette, p.pattern, p.slotColors, 'tiny', false)}
+      </div>
+      <div class="look-card-name">${p.name}</div>
+      <div class="look-card-cta">Start here →</div>
+    </div>`).join('');
+}
+
+function loadPreset(i) {
+  const p          = PRESETS[i];
+  S.mode           = 'preset';
+  S.palette        = p.palette;
+  S.pattern        = p.pattern;
+  S.slotColors     = [...p.slotColors];
+  S.manualSlots    = new Set();
+  S.currentStep    = 0;
+  S.pulsed         = false;
+  goTo('cust');
+}
+
+function startScratch() {
+  S.mode           = 'scratch';
+  S.scratchColors  = {
+    pole1: new Array(38).fill('#000000'),
+    pole2: new Array(38).fill('#000000')
+  };
+  S.scratchSel     = null;
+  S.pulsed         = false;
+  goTo('cust');
+}
+
+
+/* ────────────────────────────────────────────────────
+   SCREEN: CUSTOMIZER
+   ──────────────────────────────────────────────────── */
+function buildCustomizer() {
+  // Toggle which control panel is visible
+  document.getElementById('ctrl-preset').classList.toggle('hidden', S.mode !== 'preset');
+  document.getElementById('ctrl-scratch').classList.toggle('hidden', S.mode !== 'scratch');
+
+  refreshPoles();
+
+  if (S.mode === 'preset') {
+    renderStep();
+    if (!S.pulsed) { setTimeout(fireAffordance, 500); S.pulsed = true; }
+  } else {
+    renderScratchControls();
+    if (!S.pulsed) { setTimeout(fireAffordance, 500); S.pulsed = true; }
+  }
+}
+
+/* ── PRESET MODE ── */
+
+function renderStep() {
+  const steps  = buildPresetSteps();
+  const step   = steps[S.currentStep];
+  const total  = steps.length;
+  const isLast = S.currentStep === total - 1;
+
+  document.getElementById('step-name').textContent  = step.label;
+  document.getElementById('step-prog').textContent  = `${S.currentStep + 1} of ${total}`;
+  document.getElementById('step-prev').disabled     = S.currentStep === 0;
+  document.getElementById('step-next').disabled     = isLast;
+  document.getElementById('step-save-bar').classList.toggle('show', isLast);
+
+  const content = document.getElementById('step-content');
+  if (step.type === 'palette') content.innerHTML = renderPaletteOpts();
+  if (step.type === 'color')   content.innerHTML = renderColorOpts(step.si);
+}
+
+function renderPaletteOpts() {
+  return `<div class="step-opts-palette">
+    ${PALETTES.map((pal, i) => `
+      <div class="pal-opt${S.palette===i?' active':''}" onclick="selectPalette(${i})">
+        <div class="pal-opt-dots">
+          ${pal.colors.map(c=>`<span class="pal-dot" style="background:${c}"></span>`).join('')}
+        </div>
+        <div class="pal-opt-name">${pal.short}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderColorOpts(si) {
+  const pal = PALETTES[S.palette];
+  const nms = COLOR_NAMES[S.palette];
+  const cur = S.slotColors[si] ?? 0;
+  return `<div class="step-opts-color">
+    ${pal.colors.map((c, ci) => `
+      <div class="color-opt${cur===ci?' active':''}" onclick="selectColor(${si},${ci})">
+        <div class="color-circle" style="background:${c};"></div>
+        <div class="color-name">${nms[ci]}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function nextStep() {
+  const steps = buildPresetSteps();
+  if (S.currentStep < steps.length - 1) { S.currentStep++; renderStep(); }
+}
+function prevStep() {
+  if (S.currentStep > 0) { S.currentStep--; renderStep(); }
+}
+
+// Tap a ring in preset mode → jump to that slot's color step
+function presetTapRing(si) {
+  const steps = buildPresetSteps();
+  const idx   = steps.findIndex(st => st.type === 'color' && st.si === si);
+  if (idx >= 0) { S.currentStep = idx; renderStep(); }
+}
+
+function selectPalette(i) {
+  S.palette     = i;
+  S.slotColors  = [0,1,2,3,4,5];
+  S.manualSlots = new Set();
+  refreshPoles();
+  renderStep();
+  // Auto-advance to first color step
+  setTimeout(() => { S.currentStep = 1; renderStep(); }, 280);
+}
+
+function selectColor(si, ci) {
+  S.manualSlots.add(si);
+  S.slotColors[si] = ci;
+  // Auto-switch: if a non-manual slot had this color, bump it
+  const n = PALETTES[S.palette].colors.length;
+  S.slotColors.forEach((c, idx) => {
+    if (idx === si) return;
+    if (c === ci && !S.manualSlots.has(idx)) {
+      for (let alt = 0; alt < n; alt++) {
+        if (alt !== ci) { S.slotColors[idx] = alt; break; }
+      }
+    }
+  });
+  refreshPoles();
+  renderStep();
+}
+
+
+/* ── SCRATCH MODE ── */
+
+function renderScratchControls() {
+  const hasSelection = !!S.scratchSel;
+  const flat         = scratchSelToFlat();
+  const totalFlat    = 76; // 38 × 2 poles
+
+  // Nav bar
+  document.getElementById('scratch-prev').disabled = !hasSelection || flat <= 0;
+  document.getElementById('scratch-next').disabled = !hasSelection || flat >= totalFlat - 1;
+
+  if (hasSelection) {
+    const { poleKey, index } = S.scratchSel;
+    const lbl = scratchRingLabel(poleKey, index);
+    document.getElementById('scratch-ring-name').textContent = lbl.name;
+    document.getElementById('scratch-ring-sub').textContent  = lbl.sub;
+  } else {
+    document.getElementById('scratch-ring-name').textContent = 'Select a Ring';
+    document.getElementById('scratch-ring-sub').textContent  = 'tap any ring to paint it';
+  }
+
+  // Picker
+  const picker = document.getElementById('scratch-picker');
+  if (!hasSelection) {
+    picker.className = 'scratch-picker prompt-mode';
+    picker.innerHTML = `<div class="scratch-prompt-icon">👆</div>
+      <div class="scratch-prompt-txt">Tap any ring to paint it</div>`;
+    return;
+  }
+
+  picker.className = 'scratch-picker color-mode';
+  const currentHex = S.scratchColors[S.scratchSel.poleKey][S.scratchSel.index];
+  picker.innerHTML = ALL_COLORS.map(c => `
+    <div class="sc-opt${c.hex===currentHex?' active':''}" onclick="scratchPickColor('${c.hex}')">
+      <div class="sc-circle" style="background:${c.hex};${c.hex==='#ffffff'||c.hex==='#F5F0E8'?'border:1px solid rgba(0,0,0,0.12);':''}"></div>
+      <div class="sc-name">${c.name}</div>
+    </div>`).join('');
+}
+
+function scratchTapRing(poleKey, index) {
+  S.scratchSel = { poleKey, index };
+  refreshPoles();            // re-render rings to show selection highlight
+  renderScratchControls();   // update colour picker for this ring
+}
+
+function scratchPickColor(hex) {
+  if (!S.scratchSel) return;
+  S.scratchColors[S.scratchSel.poleKey][S.scratchSel.index] = hex;
+  // Stay on same ring — just refresh poles + picker
+  refreshPoles();
+  renderScratchControls();
+}
+
+function scratchPrev() {
+  const flat = scratchSelToFlat();
+  if (flat > 0) { S.scratchSel = scratchFlatToSel(flat - 1); refreshPoles(); renderScratchControls(); }
+}
+function scratchNext() {
+  const flat = scratchSelToFlat();
+  if (flat < 75) { S.scratchSel = scratchFlatToSel(flat + 1); refreshPoles(); renderScratchControls(); }
+}
+
+function mirrorScratch() {
+  S.scratchColors.pole2 = [...S.scratchColors.pole1];
+  refreshPoles();
+}
+
+function resetScratch() {
+  if (!confirm('Reset all rings to black?')) return;
+  S.scratchColors = {
+    pole1: new Array(38).fill('#000000'),
+    pole2: new Array(38).fill('#000000')
+  };
+  S.scratchSel = null;
+  refreshPoles();
+  renderScratchControls();
+}
+
+
+/* ── Affordance pulse ── */
+function fireAffordance() {
+  const rings = document.querySelectorAll('#poles-stage .ring');
+  [3, 9, 16, 23, 31].forEach((idx, i) => {
+    const el = rings[idx];
+    if (!el) return;
+    setTimeout(() => {
+      el.classList.add('pulse');
+      setTimeout(() => el.classList.remove('pulse'), 600);
+    }, i * 120);
+  });
+}
+
+
+/* ────────────────────────────────────────────────────
+   SAVE / SHARE
+   ──────────────────────────────────────────────────── */
+function encodeDesign() {
+  if (S.mode === 'scratch') {
+    const d = {
+      v: 2, mode: 'scratch',
+      p1: S.scratchColors.pole1,
+      p2: S.scratchColors.pole2
+    };
+    return btoa(JSON.stringify(d));
+  }
+  const d = {
+    v: 2, mode:'preset',
+    p:  S.palette, pt: S.pattern,
+    sc: S.slotColors.slice(0, 6),
+    m:  [...S.manualSlots]
+  };
+  return btoa(JSON.stringify(d));
+}
+
+function getShareURL() {
+  try {
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.searchParams.set('d', encodeDesign());
+    return url.toString();
+  } catch(e) {
+    return window.location.href + '?d=' + encodeDesign();
+  }
+}
+
+function openSave() {
+  document.getElementById('ov-poles').innerHTML = bothPolesOverlay();
+  document.getElementById('ov-link-txt').textContent = getShareURL();
+
+  if (S.mode === 'preset') {
+    const desc = designDescriptor();
+    document.getElementById('uniq-icon').textContent = desc.icon;
+    document.getElementById('uniq-text').textContent  = desc.text;
+  } else {
+    document.getElementById('uniq-icon').textContent = '🎨';
+    document.getElementById('uniq-text').textContent  = 'One-of-One Custom Build';
+  }
+
+  document.getElementById('ov-save').classList.add('open');
+  document.getElementById('copy-confirm').classList.remove('show');
+  document.getElementById('email-sent').classList.remove('show');
+  document.getElementById('ov-email').value = '';
+}
+
+function copyLink() {
+  const url = getShareURL();
+  navigator.clipboard.writeText(url).then(() => {
+    const el = document.getElementById('copy-confirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+  }).catch(() => {
+    const el    = document.getElementById('ov-link-txt');
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+}
+
+function sendEmail() {
+  const email = document.getElementById('ov-email').value.trim();
+  if (!email || !email.includes('@')) { document.getElementById('ov-email').focus(); return; }
+  const url     = getShareURL();
+  const subject = encodeURIComponent('Your twIIgs Custom Pole Design');
+  const body    = encodeURIComponent(
+    `Here's your twIIgs custom pole design:\n\n${url}\n\nOpen the link to view and order.`
+  );
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  const el = document.getElementById('email-sent');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function closeOv(id)       { document.getElementById(id).classList.remove('open'); }
+function handleOvClick(e)  { if (e.target.classList.contains('ov')) closeOv('ov-save'); }
+
+
+/* ────────────────────────────────────────────────────
+   URL STATE RESTORATION
+   ──────────────────────────────────────────────────── */
+function checkURL() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('d')) return;
+    const d = JSON.parse(atob(params.get('d')));
+
+    if (d.mode === 'scratch' && d.v >= 2) {
+      S.mode         = 'scratch';
+      S.scratchColors = { pole1: d.p1 || new Array(38).fill('#000000'),
+                          pole2: d.p2 || new Array(38).fill('#000000') };
+      goTo('cust');
+      return;
+    }
+
+    // preset (v1 or v2)
+    S.mode         = 'preset';
+    S.palette      = d.p  ?? 0;
+    S.pattern      = d.pt ?? 0;
+    S.slotColors   = d.sc ?? [0,1,2,3,4,5];
+    S.manualSlots  = new Set(d.m ?? []);
+    S.currentStep  = 0;
+    goTo('cust');
+  } catch(e) { /* invalid — ignore */ }
+}
+
+
+/* ────────────────────────────────────────────────────
    INIT
-   ══════════════════════════════════════════════ */
-buildLandingPreview();
+   ──────────────────────────────────────────────────── */
+buildLanding();
+checkURL();
 </script>
 </body>
 </html>
